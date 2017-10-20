@@ -141,8 +141,17 @@ public:
     std::string getValueOnString(){
         return m_value;
     }
-    std::string getValueToLua(){
-        return std::string("\"") + m_value + std::string("\"");
+    std::string getValueToLua()
+    {
+      std::string ostr;
+      ForIndex(i, m_value.size()) {
+        if (m_value[i] == '\\') {
+          ostr = ostr + "\\\\";
+        } else {
+          ostr = ostr + m_value[i];
+        }
+      }
+      return "\'" + ostr + "\'";
     }
 };
 

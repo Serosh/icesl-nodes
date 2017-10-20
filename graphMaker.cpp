@@ -195,10 +195,11 @@ void GraphMaker::renderImgui(){
     RenderMenu();
     ForIndex(i,getNodeWindows().size()){
        bool toDelete = getNodeWindows()[i]->display();
-       if(toDelete){//clicked on the little cross
-            deleteNodeWindow(getNodeWindows()[i]);
+       if (toDelete) {//clicked on the little cross
+          deleteNodeWindow(getNodeWindows()[i]);
+       } else {
+         getNodeWindows()[i]->renderAndPick(m_nodeSelecter, mouseDown);
        }
-       getNodeWindows()[i]->renderAndPick(m_nodeSelecter,mouseDown);
     }
     //nothing has been picked but mouse was Down
     if(mouseDown && (!m_nodeSelecter.outputHasBeenPicked && !m_nodeSelecter.inputHasBeenPicked)){

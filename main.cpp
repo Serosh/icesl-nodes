@@ -13,7 +13,7 @@
 #include "NodeWindow.h"
 #include "NodeLua.h"
 
-#include <thread>         // std::thread
+#include <thread>
 
 #ifdef USE_GLUT
 #include <GL/glut.h>
@@ -152,7 +152,7 @@ int main(int argc, char **argv)
         SimpleUI::bindImGui();
         TrackballUI::trackball().set(v3f(0), v3f(0), quatf(v3f(1, 0, 0), -1.0f)*quatf(v3f(0, 0, 1), 2.5f));
         SimpleUI::initImGui();
-
+        SimpleUI::onReshape(g_W, g_H);
 
         TrackballUI::loop();
         Messaging::getInstance().end_client();
