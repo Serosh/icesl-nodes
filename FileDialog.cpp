@@ -84,14 +84,8 @@ using namespace std;
 
 std::string openFileDialog(std::string extension)
 {
-	////// DEBUG
-	{
-		char str[1024];
-		GetCurrentDirectoryA(1024, str);
-		std::cerr << Console::white << "CURRENT DIR " << str << std::endl << Console::gray;
-	}
-	//////
-
+  char current[1024];
+  GetCurrentDirectoryA(1024, current);
   char szFile[512];
   memset(szFile,0x00,512);
   OPENFILENAMEA of;
@@ -111,20 +105,18 @@ std::string openFileDialog(std::string extension)
   of.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
   if (GetOpenFileNameA(&of)) {
     string fname = string(of.lpstrFile);
-		////// DEBUG
-		{
-			char str[1024];
-			GetCurrentDirectoryA(1024, str);
-			std::cerr << Console::white << "CURRENT DIR " << str << std::endl << Console::gray;
-		}
-		//////
+		SetCurrentDirectoryA(current);
+    cerr << "DIRECTORY (openfile) : " << current << endl;
     return fname;
   }
-	return "";
+  SetCurrentDirectoryA(current);
+  return "";
 }
 
-std::string openPathDialog() {
-
+std::string openPathDialog() 
+{
+  char current[1024];
+  GetCurrentDirectoryA(1024, current);
 	char szFile[512];
 	memset(szFile, 0x00, 512);
 	OPENFILENAMEA of;
@@ -143,19 +135,20 @@ std::string openPathDialog() {
 	of.lpstrInitialDir = NULL;
 	of.Flags = OFN_PATHMUSTEXIST;
 	if (GetOpenFileNameA(&of)) {
-		string fname = string(of.lpstrFile);
+    SetCurrentDirectoryA(current);
+    string fname = string(of.lpstrFile);
 		std::string directory;
-
 		const size_t last_slash_idx = fname.rfind('\\');
-		if (std::string::npos != last_slash_idx)
-		{
-			directory = fname.substr(0, last_slash_idx);
-			return directory;
+		if (std::string::npos != last_slash_idx) {
+      directory = fname.substr(0, last_slash_idx);
+      return directory;
 		}
 		return fname;
 	}
-	return "";
+  SetCurrentDirectoryA(current);
+  return "";
 }
+
 std::string saveFileDialog(std::string proposedFileNameFullPath)
 {
   char szFile[MAX_PATH];

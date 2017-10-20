@@ -49,7 +49,8 @@ public:
       return activeProject;
   }
 
-  void createProject(std::string path){
+  void createProject(std::string path)
+  {
        project.path = path;
        activeProject = true;
        project.createNodefolder();
