@@ -1,18 +1,18 @@
 <?xml version="1.0" ?>
-<node325261096 type="node">
+<node8948272 type="node">
     <file path="node/emit.lua" hash="ddf96bba17542e3130d433fcec05c4cd" />
-    <position x="495" y="232" />
+    <position x="494" y="233" />
     <size x="334" y="95" />
-    <input inputNode="node325261096" inputField="Shape" outputNode="node165997512" outputField="STL" />
+    <input inputNode="node8948272" inputField="Shape" outputNode="node362114832" outputField="STL" />
     <Tweaks>
         <brush type="1" name="brush" value="0" />
     </Tweaks>
-</node325261096>
-<node165997512 type="node">
+</node8948272>
+<node362114832 type="node">
     <file path="node/stl_loader.lua" hash="409e879f4de1277ac5d67b8ec4a68b20" />
-    <position x="39" y="90" />
-    <size x="422" y="85" />
+    <position x="42" y="115" />
+    <size x="389" y="77" />
     <Tweaks>
-        <path type="7" name="path" value="E:\SLEFEBVR\PROJECTS\MODELS\CuteOcto.stl" />
+        <path type="7" name="path" value="E:\SLEFEBVR\PROJECTS\MODELS\Ghost.stl" />
     </Tweaks>
-</node165997512>
+</node362114832>
