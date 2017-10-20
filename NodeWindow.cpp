@@ -57,7 +57,7 @@ bool NodeWindow::display(){
 }
 
 //------------------------------------------------------------------
-bool NodeWindow::renderAndPick(NodeSelecter &ns, bool mouseDown){
+void NodeWindow::renderAndPick(NodeSelecter &ns, bool mouseDown){
     ImColor color = ImColor(150,150,150,150);
     v2i Mpos = v2i(ImGui::GetMousePos().x,ImGui::GetMousePos().y);
 

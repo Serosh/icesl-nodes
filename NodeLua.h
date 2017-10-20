@@ -61,7 +61,7 @@ public:
   }
   Node(std::string path, std::string relativePath):m_Path(path)
   {
-    m_RelativePath = relativePath;
+    m_RelativePath = extractFileName(relativePath);
     m_Program = loadFileIntoString(m_Path.c_str());
     m_emitingNode = strcmp(m_RelativePath.c_str(),"emit.lua") == 0;
     m_timeStamp = fileTimestamp(m_Path);

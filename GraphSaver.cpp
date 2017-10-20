@@ -1,5 +1,6 @@
 #include "GraphSaver.h"
 
+#include <stack>
 
 using namespace std;
 

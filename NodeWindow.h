@@ -55,7 +55,7 @@ public:
     ImVec2 GetOutputSlotPos(int slot_no)  const { return ImVec2(m_pos[0] + m_size[0], m_pos[1] + m_size[1] * ((float)slot_no+1) / (node->getNextNamed().size()+1.0)); }
 
     bool display();
-    bool renderAndPick(NodeSelecter &ns, bool mouseDown);
+    void renderAndPick(NodeSelecter &ns, bool mouseDown);
     void displayNodeName();
 
     void removeConnectionTo(NodeWindow* nw){

@@ -141,7 +141,7 @@ std::string openPathDialog() {
 	of.lpstrFileTitle = NULL;
 	of.nMaxFileTitle = 0;
 	of.lpstrInitialDir = NULL;
-	of.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+	of.Flags = OFN_PATHMUSTEXIST;
 	if (GetOpenFileNameA(&of)) {
 		string fname = string(of.lpstrFile);
 		std::string directory;
