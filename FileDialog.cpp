@@ -82,15 +82,18 @@ using namespace std;
 
 /// ============================== Windows =================================
 
+/** Function that open a file 
+    @param extention: file extention
+*/
 std::string openFileDialog(std::string extension)
 {
   char current[1024];
-  GetCurrentDirectoryA(1024, current);
+  GetCurrentDirectoryA(1024, current); //Retrieve the current directory
   char szFile[512];
   memset(szFile,0x00,512);
-  OPENFILENAMEA of;
+  OPENFILENAMEA of;  //of is the name given to the file 
   ZeroMemory(&of, sizeof(of));
-  of.lStructSize = sizeof(of);
+  of.lStructSize = sizeof(of);// The length, in bytes of the file 
   of.hwndOwner = NULL; // SimpleUI::getHWND();
   of.lpstrFile = szFile;
   // Set lpstrFile[0] to '\0' so that GetOpenFileName does not
@@ -113,29 +116,31 @@ std::string openFileDialog(std::string extension)
   return "";
 }
 
+// Function that open an existing file using the path  
+
 std::string openPathDialog() 
 {
   char current[1024];
-  GetCurrentDirectoryA(1024, current);
+  GetCurrentDirectoryA(1024, current); 
 	char szFile[512];
 	memset(szFile, 0x00, 512);
-	OPENFILENAMEA of;
+	OPENFILENAMEA of; 
 	ZeroMemory(&of, sizeof(of));
-	of.lStructSize = sizeof(of);
+	of.lStructSize = sizeof(of); 
 	of.hwndOwner = NULL; // SimpleUI::getHWND();
 	of.lpstrFile = szFile;
 	// Set lpstrFile[0] to '\0' so that GetOpenFileName does not
 	// use the contents of szFile to initialize itself.
 	of.lpstrFile[0] = '\0';
-	of.nMaxFile = sizeof(szFile);
+	of.nMaxFile = sizeof(szFile); // storage variable for path and file name
 	of.lpstrFilter = "All\0*.*\0";
-	of.nFilterIndex = 1;
-	of.lpstrFileTitle = NULL;
-	of.nMaxFileTitle = 0;
+	of.nFilterIndex = 1;      
+	of.lpstrFileTitle = NULL; //The file name and extension (without path information) of the selected file
+	of.nMaxFileTitle = 0; 
 	of.lpstrInitialDir = NULL;
-	of.Flags = OFN_PATHMUSTEXIST;
+	of.Flags = OFN_PATHMUSTEXIST; //A set of bit flags to use to initialize the dialog box
 	if (GetOpenFileNameA(&of)) {
-    SetCurrentDirectoryA(current);
+    SetCurrentDirectoryA(current);  //Change directory to the current one
     string fname = string(of.lpstrFile);
 		std::string directory;
 		const size_t last_slash_idx = fname.rfind('\\');
@@ -148,6 +153,8 @@ std::string openPathDialog()
   SetCurrentDirectoryA(current);
   return "";
 }
+
+// Function that save a file
 
 std::string saveFileDialog(std::string proposedFileNameFullPath)
 {
