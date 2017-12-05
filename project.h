@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include "imgui/imgui.h"
@@ -19,6 +20,7 @@ public:
 
 #ifndef WIN32
   //---------------------------------------------------
+  //trouve le chemin absolu et le copie dans dest_path
   void importLua( std::string path){
     std::string nodeDir = this->path + "/node/";
     boost::filesystem::path src_path(path);
@@ -28,6 +30,7 @@ public:
   }
 
   //---------------------------------------------------
+   //crée un nouveau répertoire pour un nouveau noeud 
   void createNodefolder(){
     std::string NodeDir = path + "/node";
     boost::filesystem::path dir(NodeDir);
@@ -35,6 +38,8 @@ public:
   }
 
   //---------------------------------------------------
+  //parcours le directory (vecteur de fichiers)
+  //si le fichier n'y es pas --> push_back
   void listLuaFileInDir(std::vector<std::string>& files)
   {
     std::string NodeDir = path + "/node";
@@ -47,6 +52,7 @@ public:
   }
 
   //---------------------------------------------------
+  // idem precedent, mais prend en argument le directory
   void listLuaFileInDir(std::vector<std::string>& files,std::string directory)
   {
     boost::filesystem::path dir(directory);
@@ -59,6 +65,7 @@ public:
   }
 
   //---------------------------------------------------
+  //si le fichier y est on le push back 
   void listFolderinDir(std::vector<std::string>& files, std::string folder){
     boost::filesystem::path dir(folder);
 
@@ -70,6 +77,13 @@ public:
   }
 
   //---------------------------------------------------
+  //essaye de créer un dossier de destination et verifie si ok
+  //sinon erreur
+
+  //pour chaque fichier dans le directory 
+  //essaye de copier sinon erreur
+
+  //renvoie true si copie ok
   bool copyDir(std::string source, std::string destination )
   {
     boost::filesystem::path src(source);
@@ -107,6 +121,7 @@ public:
   }
 
   //---------------------------------------------------
+  //comme son nom l'indique
   void exctractPathFromXml(std::string& s){
     boost::filesystem::path p(s.c_str());
     boost::filesystem::path dir = p.parent_path();
@@ -114,6 +129,7 @@ public:
   }
 #endif
 #ifdef WIN32
+  //idem tout ce qui est precedement mais si WIN32 est defini
   void importLua(std::string srcPath) 
   {
     std::string nodeDir = this->path + "/node/";
