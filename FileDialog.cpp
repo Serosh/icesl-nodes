@@ -99,14 +99,16 @@ std::string openFileDialog(std::string extension)
   // Set lpstrFile[0] to '\0' so that GetOpenFileName does not
   // use the contents of szFile to initialize itself.
   of.lpstrFile[0] = '\0';
-  of.nMaxFile = sizeof(szFile);
+  of.nMaxFile = sizeof(szFile); // storage variable for path and file name
   of.lpstrFilter = "All\0*.*\0Script\0*.lua\0STL\0*.stl\0OBJ\0*.obj\0IceSL\0*.ice\0";
   of.nFilterIndex = 1;
-  of.lpstrFileTitle = NULL;
+  of.lpstrFileTitle = NULL;//The file name and extension (without path information) of the selected file
   of.nMaxFileTitle = 0;
   of.lpstrInitialDir = NULL;
-  of.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
-  if (GetOpenFileNameA(&of)) {
+  of.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;//A set of bit flags to use to initialize the dialog box
+  //OFN_PATHMUSTEXIST: The user can type only valid paths and file names
+  //OFN_FILEMUSTEXIST:The user can type only names of existing files in the File Name entry field
+  if (GetOpenFileNameA(&of)) {  //Open the file
     string fname = string(of.lpstrFile);
 		SetCurrentDirectoryA(current);
     cerr << "DIRECTORY (openfile) : " << current << endl;
@@ -122,7 +124,7 @@ std::string openPathDialog()
 {
   char current[1024];
   GetCurrentDirectoryA(1024, current); 
-	char szFile[512];
+	char szFile[512]; 
 	memset(szFile, 0x00, 512);
 	OPENFILENAMEA of; 
 	ZeroMemory(&of, sizeof(of));
@@ -132,13 +134,13 @@ std::string openPathDialog()
 	// Set lpstrFile[0] to '\0' so that GetOpenFileName does not
 	// use the contents of szFile to initialize itself.
 	of.lpstrFile[0] = '\0';
-	of.nMaxFile = sizeof(szFile); // storage variable for path and file name
+	of.nMaxFile = sizeof(szFile); 
 	of.lpstrFilter = "All\0*.*\0";
 	of.nFilterIndex = 1;      
-	of.lpstrFileTitle = NULL; //The file name and extension (without path information) of the selected file
+	of.lpstrFileTitle = NULL; 
 	of.nMaxFileTitle = 0; 
 	of.lpstrInitialDir = NULL;
-	of.Flags = OFN_PATHMUSTEXIST; //A set of bit flags to use to initialize the dialog box
+	of.Flags = OFN_PATHMUSTEXIST; //OFN_PATHMUSTEXIST: The user can type only valid paths and file names
 	if (GetOpenFileNameA(&of)) {
     SetCurrentDirectoryA(current);  //Change directory to the current one
     string fname = string(of.lpstrFile);
@@ -158,8 +160,8 @@ std::string openPathDialog()
 
 std::string saveFileDialog(std::string proposedFileNameFullPath)
 {
-  char szFile[MAX_PATH];
-  std::strcpy(szFile, proposedFileNameFullPath.c_str());
+  char szFile[MAX_PATH]; //The size of the path 
+  std::strcpy(szFile, proposedFileNameFullPath.c_str()); //Put in the szfile variable the path of the proposed file
   OPENFILENAMEA of;
   ZeroMemory(&of, sizeof(of));
   of.lStructSize = sizeof(of);
@@ -171,8 +173,8 @@ std::string saveFileDialog(std::string proposedFileNameFullPath)
   of.lpstrFileTitle = NULL;
   of.nMaxFileTitle = 0;
   of.lpstrInitialDir = NULL;
-  of.Flags = OFN_HIDEREADONLY;
-  if (GetSaveFileNameA(&of)) {
+  of.Flags = OFN_HIDEREADONLY; //OFN_HIDEREADONLY: Hides the Read Only check box
+  if (GetSaveFileNameA(&of)) { //Creates a Save dialog box that lets the user specify the drive, directory, and name of a file to save
     string fname = string(of.lpstrFile);
     return fname;
   }
