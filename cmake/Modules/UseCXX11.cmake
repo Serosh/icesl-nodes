@@ -1,6 +1,4 @@
-################################################################################
 CMake_Minimum_Required(VERSION 2.8.0)
-################################################################################
 
 # TODO: Set C Compiler Flags
 
@@ -19,9 +17,3 @@ Else()
 		Message(WARNING "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
 	Endif()
 Endif()
-
-if(APPLE)
-	set(CMAKE_CXX_COMPILER clang++)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++")
-	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++")
-endif()
