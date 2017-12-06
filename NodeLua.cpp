@@ -6,9 +6,12 @@ using namespace std;
 
 
 //-------------------------------------------------------
+//open master.lua and read all
 void Node::onChange(){
     GraphMaker::getInstance().onChange();
 }
+
+//both 2 following functions : change name when new out- or input
 
 //-------------------------------------------------------
 void Node::makeNewInput(string name){
@@ -28,6 +31,7 @@ void Node::makeNewOutput(string name){
 }
 
 //-------------------------------------------------------
+// remove connection in a name when a connection is removed on the window 
 void Node::removeConnectionTo(Node* n)
 {
     for(auto edge: prevNamed){
