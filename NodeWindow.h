@@ -57,6 +57,7 @@ public:
     ImVec2 GetInputSlotPos(int slot_no)   const { return ImVec2(m_pos[0], m_pos[1] + m_size[1] * ((float)slot_no+1) / (node->getPrevNamed().size()+1.0)); }
     ImVec2 GetOutputSlotPos(int slot_no)  const { return ImVec2(m_pos[0] + m_size[0], m_pos[1] + m_size[1] * ((float)slot_no+1) / (node->getNextNamed().size()+1.0)); }
 
+	// display the window of the node I think
     bool display();
     void renderAndPick(NodeSelecter &ns, bool mouseDown);
     void displayNodeName();
