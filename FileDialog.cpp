@@ -15,64 +15,91 @@ static QApplication *s_QtApp = NULL;
 static int    s_Argc = 0;
 static char **s_Argv = NULL;
 
+
 /// ==============================  Linux  =================================
 
+// the following function opens a dialog window on which we can creates objects like cube, sphere...
 std::string openFileDialog(std::string extension)
 {
-  if ( s_QtApp == NULL ) {
-    s_QtApp = new QApplication(s_Argc,s_Argv);
-    // Qt likes to reset the locale when creating a QApplication... WTF
-    std::locale::global(std::locale("C"));
-   }
-  // FC: use QFileDialog::DontUseNativeDialog as otherwise the file dialog won't close
-  // http://qt-project.org/forums/viewthread/34159
-  //
-  QString str = QFileDialog::getOpenFileName(NULL, "Open File", "./", extension.c_str(), NULL, QFileDialog::DontUseNativeDialog);
-  std::locale::global(std::locale("C"));
-  //std::cerr << "LC_ALL: " << setlocale(LC_ALL, NULL) << std::endl;
-  if (str.isNull()) {
-    return "";
-  } else {
-    return str.toStdString();
-  }
+	if (s_QtApp == NULL) { //tests if there is already an opened graphical interface
+		s_QtApp = new QApplication(s_Argc, s_Argv); //creates a new graphical user interface
+													// Qt likes to reset the locale when creating a QApplication... WTF
+		std::locale::global(std::locale("C"));
+	}
+	// FC: use QFileDialog::DontUseNativeDialog as otherwise the file dialog won't close
+	// http://qt-project.org/forums/viewthread/34159
+
+
+
+	QString str = QFileDialog::getOpenFileName(NULL, "Open File", "./", extension.c_str(), NULL, QFileDialog::DontUseNativeDialog);
+	//QFileDialog class provides a dialog that allow users to select files or directories.																																																																																							 
+	/** a modal QFileDialog is created using a static function.
+	The dialog initially displays the contents of the "./" root directory (third parameter),
+	The parent of the file dialog is set to NULL(the first parameter), and the window title is set to "Open File"(2nd parameter).
+	*/
+	// GetOpenFilename( FileFilter , FilterIndex , Title , ButtonText , MultiSelect )																																																													 
+	// the first parameter  : A string specifying file filtering criteria, in this case it's NULL.
+	// the second parameter : Specifies the index numbers of the default file filtering criteria, from 1 to the number of filters specified in FileFilter.
+	// the third parameter  : Specifies the title of the dialog box. If this argument is omitted, the title is "Open."
+	// the fourth parameter : Macintosh only.
+
+	std::locale::global(std::locale("C"));
+	//std::cerr << "LC_ALL: " << setlocale(LC_ALL, NULL) << std::endl;
+	if (str.isNull()) { //returns "" if the dialog window is empty
+		return "";
+	}
+	else {
+		return str.toStdString();
+	}
 }
 
+//
 std::string openPathDialog()
 {
-  if ( s_QtApp == NULL ) {
-    s_QtApp = new QApplication(s_Argc,s_Argv);
-    // Qt likes to reset the locale when creating a QApplication... WTF
-    std::locale::global(std::locale("C"));
-   }
-  QString path = QFileDialog::getExistingDirectory(NULL, "Select folder", NULL, QFileDialog::DontUseNativeDialog);
-  std::locale::global(std::locale("C"));
+	if (s_QtApp == NULL) {
+		s_QtApp = new QApplication(s_Argc, s_Argv);//creates a new graphical interface
+												   // Qt likes to reset the locale when creating a QApplication... WTF
+		std::locale::global(std::locale("C"));
+	}
+
+	/* The following function creates a modal file dialog with the given parent widget(which is the first parameter : NULL in this case)
+	.If parent is not 0, the dialog will be displayed centered on the parent widget.*/
+
+	QString path = QFileDialog::getExistingDirectory(NULL, "Select folder", NULL, QFileDialog::DontUseNativeDialog);
+	//The working directory of the dialog is set to "path" .
+	std::locale::global(std::locale("C"));
 
 
-  //std::cerr << "LC_ALL: " << setlocale(LC_ALL, NULL) << std::endl;
-  if (path.isNull()) {
-    return "";
-  } else {
-    return path.toStdString();
-  }
+	//std::cerr << "LC_ALL: " << setlocale(LC_ALL, NULL) << std::endl;
+	if (path.isNull()) {
+		return "";
+	}
+	else {
+		return path.toStdString();
+	}
 }
+
+//the following function saves the contents of a dialog window 
 std::string saveFileDialog(std::string proposedFileNameFullPath)
 {
-  if ( s_QtApp == NULL ) {
-    s_QtApp = new QApplication(s_Argc,s_Argv);
-    // Qt likes to reset the locale when creating a QApplication... WTF
-    std::locale::global(std::locale("C"));
-  }
-  // FC: use QFileDialog::DontUseNativeDialog as otherwise the file dialog won't close
-  // http://qt-project.org/forums/viewthread/34159
-  QString str = QFileDialog::getSaveFileName(NULL, ("Save File"), proposedFileNameFullPath.c_str(), ("Any (*.*)"), NULL, QFileDialog::DontUseNativeDialog);
-  std::locale::global(std::locale("C"));
-  //std::cerr << "LC_ALL: " << setlocale(LC_ALL, NULL) << std::endl;
-  if (str.isNull()) {
-    return "";
-  } else {
-    return str.toStdString();
-  }
+	if (s_QtApp == NULL) {
+		s_QtApp = new QApplication(s_Argc, s_Argv);
+		// Qt likes to reset the locale when creating a QApplication... WTF
+		std::locale::global(std::locale("C"));
+	}
+	// FC: use QFileDialog::DontUseNativeDialog as otherwise the file dialog won't close
+	// http://qt-project.org/forums/viewthread/34159
+	QString str = QFileDialog::getSaveFileName(NULL, ("Save File"), proposedFileNameFullPath.c_str(), ("Any (*.*)"), NULL, QFileDialog::DontUseNativeDialog);
+	std::locale::global(std::locale("C"));
+	//std::cerr << "LC_ALL: " << setlocale(LC_ALL, NULL) << std::endl;
+	if (str.isNull()) {
+		return "";
+	}
+	else {
+		return str.toStdString();
+	}
 }
+
 
 #else
 
