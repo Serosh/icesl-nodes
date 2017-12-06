@@ -18,7 +18,7 @@ bool NodeWindow::display(){
 
     ImGui::Begin(m_name.c_str(), &m_show,offsetGUI); 
 	//ImGui::Begin() makes the click upper right corner to close a window available when 'bool* p_open' is passed as an argument of the function
-	// m_name.c_str() is the name of the window, &m_show is the boolean* offsetGUI are flags
+	// m_name.c_str() is the name of the window, &m_show is the boolean*, offsetGUI are flags
     m_drawList = ImGui::GetWindowDrawList();
 	//ImGui::GetWindowDrawList() enables to add custom rendering within a window
 	// ImDrawList* : the DrawList corresponding to the current window (from GetCurrentWindow())
@@ -65,16 +65,18 @@ bool NodeWindow::display(){
 
 //------------------------------------------------------------------
 void NodeWindow::renderAndPick(NodeSelecter &ns, bool mouseDown){       // create circles which link the different nodes to each other
+	// NodeSelecter is a structure used to select two nodes to connect them (one is the nodePickedInput, and one is the nodePickedOutput)
+	// In fact, nodePickedInput and nodePickedOutput are nodes associated with positions (structure NodePickedInfo)
     ImColor color = ImColor(150,150,150,150);                           // Gestion de la couleur des cercles en fonction du clic, du drag, de la connection, ...
     v2i Mpos = v2i(ImGui::GetMousePos().x,ImGui::GetMousePos().y);      // Position de la souris
 
     //draw input circles (original comment)
     ForIndex(i,node->getInputName().size()){
-        v2i Cpos = v2i(GetInputSlotPos(i).x,GetInputSlotPos(i).y);
-        if(sqLength(Cpos-Mpos) < 100){
+        v2i Cpos = v2i(GetInputSlotPos(i).x,GetInputSlotPos(i).y); // vector containing the position of the input of the node associated with nodePickedInput
+        if(sqLength(Cpos-Mpos) < 100){ // the user has its mouse near to the input of the selected node associated with nodePickedInput
             color =ImColor(150,0,0,150);
-            if(mouseDown){
-                if(!ns.inputHasBeenPicked){
+            if(mouseDown){ // the user selects the input of the node associated with nodePickedInput
+                if(!ns.inputHasBeenPicked){ // if the selected input node has been picked
                     ns.nodePickedInput.nodeWindow = this;
                     ns.nodePickedInput.pos = i;
                     ns.inputHasBeenPicked = true;
@@ -82,30 +84,32 @@ void NodeWindow::renderAndPick(NodeSelecter &ns, bool mouseDown){       // creat
             }
         }
         if(ns.nodePickedInput.nodeWindow == this && ns.nodePickedInput.pos == i)color =ImColor(0,150,0,150);
+		// add a circle at the intput of the node associated with nodePickedIntput
+		// this node will be connected with the output node found in the next loop
         m_drawList->AddCircleFilled(GetInputSlotPos(i), 10, color,64);
         color = ImColor(150,150,150,150);
     }
 
     //draw output circles (original comment)
- 
-    ForIndex(i,node->getoutputName().size()){                        
-        v2i Cpos = v2i(GetOutputSlotPos(i).x,GetOutputSlotPos(i).y);
-        if(sqLength(Cpos-Mpos) < 100){
+    ForIndex(i,node->getoutputName().size()){ // cycle through (parcourt) the nodes which are connected to the output of the current node            
+        v2i Cpos = v2i(GetOutputSlotPos(i).x,GetOutputSlotPos(i).y); // vector containing the position of the output of the node associated with nodePickedOutput
+        if(sqLength(Cpos-Mpos) < 100){ // if the user has its mouse near to the output of the selected node associated with nodePickedOutput
             color =ImColor(150,0,0,150);
-            if(mouseDown){
-                if(!ns.outputHasBeenPicked){
-                    ns.nodePickedOutput.nodeWindow = this;
+            if(mouseDown){ // if the user selects the output of the node associated with nodePickedOutput
+                if(!ns.outputHasBeenPicked){ // if the selected output node has been picked
+                    ns.nodePickedOutput.nodeWindow = this; 
                     ns.nodePickedOutput.pos = i;
                     ns.outputHasBeenPicked = true;
                 }
             }
         }
-        if(ns.nodePickedOutput.nodeWindow == this && ns.nodePickedOutput.pos == i)color =ImColor(0,150,0,150);
-
+        if(ns.nodePickedOutput.nodeWindow == this && ns.nodePickedOutput.pos == i)color =ImColor(0,150,0,150); 
+		// add a circle at the output of the node associated with nodePickedOutput
+		// this node will be connected with the input node found in the previous loop
         m_drawList->AddCircleFilled(GetOutputSlotPos(i), 10, color,64);
         color = ImColor(150,150,150,150);
     }
-    if(ns.nodePickedInput.nodeWindow == this){
+    if(ns.nodePickedInput.nodeWindow == this){ // draw a curve from the input node to the mouse
         int pos =  ns.nodePickedInput.pos;
         ImVec2 p1 = GetInputSlotPos(pos);
         ImVec2 p2 = ImGui::GetMousePos();
@@ -113,7 +117,7 @@ void NodeWindow::renderAndPick(NodeSelecter &ns, bool mouseDown){       // creat
         ImVec2 p4 = ImVec2(p2.x+50,p2.y);
         m_drawList->AddBezierCurve(p1, p3, p4, p2, ImColor(200,200,100), 3.0f);
     }
-    if(ns.nodePickedOutput.nodeWindow == this){
+    if(ns.nodePickedOutput.nodeWindow == this){ // draw a curve from the output node to the mouse
         int pos =  ns.nodePickedInput.pos;
         ImVec2 p1 = GetOutputSlotPos(pos);
         ImVec2 p2 = ImGui::GetMousePos();
@@ -149,7 +153,7 @@ void NodeWindow::displayNodeName()              // Permet l'affichage des noms d
                 |ImGuiWindowFlags_NoMove
                 |ImGuiWindowFlags_NoSavedSettings
                 |ImGuiWindowFlags_NoTitleBar
-                //|ImGuiWindowFlags_NoBringToFrontOnFocus
+                //|ImGuiWindowFlags_NoBringToFrontOnFocus (original comment)
                 |ImGuiWindowFlags_AlwaysAutoResize
                 );
 
@@ -172,7 +176,7 @@ void NodeWindow::displayNodeName()              // Permet l'affichage des noms d
         float posX = GetOutputSlotPos(i).x;
         float posY= GetOutputSlotPos(i).y;
         ImGui::SetWindowPos(ImVec2(posX,posY));
-        ImGui::Text(node->getoutputName()[i].c_str());      // Nom du noeud affiché à côté du cercle de lien.
+        ImGui::Text(node->getoutputName()[i].c_str());      // Nom du noeud affich� a� cote du cercle de lien
         ImGui::End();
 
     }

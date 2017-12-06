@@ -22,7 +22,7 @@ struct NodeSelecter;
 
 class NodeWindow:public GenericWindow{
     Node* node;
-    std::vector<NodeWindow*> previousConnectedWindow; // contains all the windows which are connected to the window of the Node node
+    std::vector<NodeWindow*> previousConnectedWindow; // contains all the windows which are connected to the window of the Node node (to its input)
 
 public:
     NodeWindow():GenericWindow(){}
@@ -42,8 +42,8 @@ public:
     void drawInputValue();
     void drawOutputValue();
 
-    void connectPreviousWindow(NodeWindow* prev, int inpos, int outpos); // connect two nodes together : this and prev 
-    void connectPreviousWindow(NodeWindow* prev,std::string in, std::string out); // connect two nodes together 
+    void connectPreviousWindow(NodeWindow* prev, int inpos, int outpos); // connect the window to its previous nodes
+    void connectPreviousWindow(NodeWindow* prev,std::string in, std::string out); // connect the window to its previous nodes
     void nodeChange(){
         previousConnectedWindow.resize(node->getInputName().size());
 		// resize the vector previousConnectedWindow 
@@ -57,8 +57,8 @@ public:
     ImVec2 GetInputSlotPos(int slot_no)   const { return ImVec2(m_pos[0], m_pos[1] + m_size[1] * ((float)slot_no+1) / (node->getPrevNamed().size()+1.0)); }
     ImVec2 GetOutputSlotPos(int slot_no)  const { return ImVec2(m_pos[0] + m_size[0], m_pos[1] + m_size[1] * ((float)slot_no+1) / (node->getNextNamed().size()+1.0)); }
 
-	// display the window of the node I think
-    bool display();
+	
+    bool display();// display the window of the node
     void renderAndPick(NodeSelecter &ns, bool mouseDown);
     void displayNodeName();
 
@@ -71,7 +71,7 @@ public:
         }
     }
 };
-
+//structure containing a node and the position of this node (I think)
 struct NodePickedInfo{
     NodeWindow* nodeWindow;
     int pos;
