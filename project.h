@@ -165,11 +165,16 @@ public:
     }
   }
 
+  //---------------------------------------------------
+  // Not used and not implemented
   void listFolderinDir(std::vector<std::string>& files, std::string folder)
   {
 
   }
 
+  //---------------------------------------------------
+  //Must copy a Directory source to a directory destination. Not yet implemented
+  //TODO: To implement
   bool copyDir(std::string source, std::string destination)
   {
     return false;
@@ -177,7 +182,7 @@ public:
 #endif
 
   //---------------------------------------------------
-
+  // Transform an absolute path to a relative path.
   std::string relativePath(std::string& path) 
   {
     int nfsize = nodefolder().size();
@@ -186,7 +191,7 @@ public:
   }
 
   //---------------------------------------------------
-
+  // return string of node folder.
   std::string nodefolder()
   {
     std::string NodeDir = path + "/node/";
@@ -194,30 +199,36 @@ public:
   }
 
   //---------------------------------------------------
-
+  //Import a new Emit Node
   void copyEmitNode()
   {
     importLua(std::string(PATHTOSRC"/lua_constant/emit.lua"));
   }
   
   //---------------------------------------------------
-  
+  // Create a file tree
   std::string recursiveFileSelecter(std::string current_dir)
   {
+	//Create the list of files and directories in the current directorie
     std::vector<std::string> files;
     listLuaFileInDir(files, current_dir);
     std::vector<std::string> directories;
     std::string nameDir = "";
     listFolderinDir(directories, current_dir);
+	//Configure the text color for directories
     ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.7, 0.7, 1.0, 1));
+	//For all directories create a submenu and call recursively recursiveFileSelecter with the path current_dir/directorie[i]
     ForIndex(i, directories.size()){
       if (ImGui::BeginMenu(directories[i].c_str())){
         nameDir = recursiveFileSelecter(current_dir + "/" + directories[i]);
         ImGui::EndMenu();
       }
     }
+	//Delete the old colorstyle of text
     ImGui::PopStyleColor();
+	//Set a new style color for files
     ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1., 1., 1.0, 1));
+	//For all files, add a menuItem untitled with file name and set actual nameDir
     ForIndex(i, files.size()){
       if (ImGui::MenuItem(files[i].c_str())){
         nameDir = current_dir + "/" + files[i].c_str();
@@ -229,6 +240,7 @@ public:
   }
 
   //---------------------------------------------------
+  // The previous function create a file tree and this one display it
   std::string renderFileSelecter(v2i pos){
     std::string nameDir = "";
     ImGui::Begin("Menu");
