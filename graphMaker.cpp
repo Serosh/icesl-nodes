@@ -13,7 +13,7 @@ void GraphMaker::onChange()
   ofstream file;
   file.open("master.lua");
   file << loadFileIntoString(PATHTOSRC"/lua_constant/header.lua");
-  ForIndex(i, m_NodeGraph.nodeWindows.size()){
+  ForIndex(i, m_NodeGraph.nodeWindows.size()){ 
     Node* n = m_NodeGraph.nodeWindows[i]->getNode();
     if (n->isEmitingNode()){
       n->writeMaster(file);
@@ -28,7 +28,7 @@ void GraphMaker::onChange()
 //------------------------------------------------------------------
 void GraphMaker::deleteNodeWindow(NodeWindow* nw)
 {
-  //remove all the connectiion
+  //remove all the connection
   Node* toDelete = nw->getNode();
   ForIndex(i, m_NodeGraph.nodeWindows.size()){
     Node* n = m_NodeGraph.nodeWindows[i]->getNode();
@@ -84,18 +84,18 @@ void GraphMaker::makeNewNode(string path, v2i pos){
   string type = name;
   bool isEmitting = false;
   name = name.substr(0, name.size() - 4);
-  if (m_NodeGraph.numberOfWindowsByType.find(type) != m_NodeGraph.numberOfWindowsByType.end()){
-    s = ++m_NodeGraph.numberOfWindowsByType.at(type);
+  if (m_NodeGraph.numberOfWindowsByType.find(type) != m_NodeGraph.numberOfWindowsByType.end()){ //if the type of window exist
+    s = ++m_NodeGraph.numberOfWindowsByType.at(type); 
     name = string(name) + std::to_string(s);
   } else{
     m_NodeGraph.numberOfWindowsByType[type] = 0;
   }
 
-  n = new NodeWindow(new Node(path, type), name.c_str(), pos);
+  n = new NodeWindow(new Node(path, type), name.c_str(), pos); //creating the new window at the location pointed to by pos
 
   cerr << name << " is Emitting " << n->getNode()->isEmitingNode() << endl;
-
-  if (n != nullptr)m_NodeGraph.nodeWindows.push_back(n);
+   
+  if (n != nullptr)m_NodeGraph.nodeWindows.push_back(n); //adding it to the list of the GraphMaker
 }
 
 
@@ -124,7 +124,7 @@ void GraphMaker::loadGraph(string path)
   GraphSaver::loadGraph(project, path, m_NodeGraph);
   this->activeProject = true;
   console.clear();
-  this->onChange();
+  this->onChange(); //update the GraphMaker
 }
 
 //-------------------------------------

@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include "imgui/imgui.h"
@@ -19,6 +20,7 @@ public:
 
 #ifndef WIN32
   //---------------------------------------------------
+  //trouve le chemin absolu et le copie dans dest_path
   void importLua( std::string path){
     std::string nodeDir = this->path + "/node/";
     boost::filesystem::path src_path(path);
@@ -28,6 +30,7 @@ public:
   }
 
   //---------------------------------------------------
+   //crée un nouveau répertoire pour un nouveau noeud 
   void createNodefolder(){
     std::string NodeDir = path + "/node";
     boost::filesystem::path dir(NodeDir);
@@ -35,6 +38,8 @@ public:
   }
 
   //---------------------------------------------------
+  //parcours le directory (vecteur de fichiers)
+  //si le fichier n'y es pas --> push_back
   void listLuaFileInDir(std::vector<std::string>& files)
   {
     std::string NodeDir = path + "/node";
@@ -47,6 +52,7 @@ public:
   }
 
   //---------------------------------------------------
+  // idem precedent, mais prend en argument le directory
   void listLuaFileInDir(std::vector<std::string>& files,std::string directory)
   {
     boost::filesystem::path dir(directory);
@@ -59,6 +65,7 @@ public:
   }
 
   //---------------------------------------------------
+  //si le fichier y est on le push back 
   void listFolderinDir(std::vector<std::string>& files, std::string folder){
     boost::filesystem::path dir(folder);
 
@@ -70,6 +77,13 @@ public:
   }
 
   //---------------------------------------------------
+  //essaye de créer un dossier de destination et verifie si ok
+  //sinon erreur
+
+  //pour chaque fichier dans le directory 
+  //essaye de copier sinon erreur
+
+  //renvoie true si copie ok
   bool copyDir(std::string source, std::string destination )
   {
     boost::filesystem::path src(source);
@@ -107,6 +121,7 @@ public:
   }
 
   //---------------------------------------------------
+  //comme son nom l'indique
   void exctractPathFromXml(std::string& s){
     boost::filesystem::path p(s.c_str());
     boost::filesystem::path dir = p.parent_path();
@@ -114,6 +129,7 @@ public:
   }
 #endif
 #ifdef WIN32
+  //idem tout ce qui est precedement mais si WIN32 est defini
   void importLua(std::string srcPath) 
   {
     std::string nodeDir = this->path + "/node/";
@@ -149,11 +165,16 @@ public:
     }
   }
 
+  //---------------------------------------------------
+  // Not used and not implemented
   void listFolderinDir(std::vector<std::string>& files, std::string folder)
   {
 
   }
 
+  //---------------------------------------------------
+  //Must copy a Directory source to a directory destination. Not yet implemented
+  //TODO: To implement
   bool copyDir(std::string source, std::string destination)
   {
     return false;
@@ -161,7 +182,7 @@ public:
 #endif
 
   //---------------------------------------------------
-
+  // Transform an absolute path to a relative path.
   std::string relativePath(std::string& path) 
   {
     int nfsize = nodefolder().size();
@@ -170,7 +191,7 @@ public:
   }
 
   //---------------------------------------------------
-
+  // return string of node folder.
   std::string nodefolder()
   {
     std::string NodeDir = path + "/node/";
@@ -178,30 +199,36 @@ public:
   }
 
   //---------------------------------------------------
-
+  //Import a new Emit Node
   void copyEmitNode()
   {
     importLua(std::string(PATHTOSRC"/lua_constant/emit.lua"));
   }
   
   //---------------------------------------------------
-  
+  // Create a file tree
   std::string recursiveFileSelecter(std::string current_dir)
   {
+	//Create the list of files and directories in the current directorie
     std::vector<std::string> files;
     listLuaFileInDir(files, current_dir);
     std::vector<std::string> directories;
     std::string nameDir = "";
     listFolderinDir(directories, current_dir);
+	//Configure the text color for directories
     ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.7, 0.7, 1.0, 1));
+	//For all directories create a submenu and call recursively recursiveFileSelecter with the path current_dir/directorie[i]
     ForIndex(i, directories.size()){
       if (ImGui::BeginMenu(directories[i].c_str())){
         nameDir = recursiveFileSelecter(current_dir + "/" + directories[i]);
         ImGui::EndMenu();
       }
     }
+	//Delete the old colorstyle of text
     ImGui::PopStyleColor();
+	//Set a new style color for files
     ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1., 1., 1.0, 1));
+	//For all files, add a menuItem untitled with file name and set actual nameDir
     ForIndex(i, files.size()){
       if (ImGui::MenuItem(files[i].c_str())){
         nameDir = current_dir + "/" + files[i].c_str();
@@ -213,6 +240,7 @@ public:
   }
 
   //---------------------------------------------------
+  // The previous function create a file tree and this one display it
   std::string renderFileSelecter(v2i pos){
     std::string nameDir = "";
     ImGui::Begin("Menu");
