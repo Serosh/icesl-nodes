@@ -92,7 +92,7 @@ std::string saveFileDialog(std::string proposedFileNameFullPath)
 	}
 }
 
-
+#else
 
 #include <Windows.h>
 
