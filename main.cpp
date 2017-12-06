@@ -21,12 +21,12 @@
 
 LIBSL_WIN32_FIX
 using namespace std;
-int g_W = 1024;
-int g_H = 1024;
+int g_W = 1024; //graph weight
+int g_H = 1024; //graph height
 
 
 void drawImgUIStuff(){
-
+	//drawing the image
     GraphMaker::getInstance().renderImgui();
 }
 
@@ -62,7 +62,7 @@ void mainScanCodeRelease(uint sc)
 // --------------------------------------------------------------
 void mainMousePressed(uint x, uint y, uint button, uint flags)
 {
-    if(flags == LIBSL_BUTTON_DOWN && button == LIBSL_RIGHT_BUTTON){
+    if(flags == LIBSL_BUTTON_DOWN && button == LIBSL_RIGHT_BUTTON){ //Si le bouton est appuyé
         GraphMaker::getInstance().setShowRMenu(true);
         GraphMaker::getInstance().setMousePos(v2i(x,y));
     }
@@ -92,6 +92,8 @@ void mainMouseWheel(int incr)
 //there are some duplicated code
 #ifdef USE_GLUT
 void mouse(int glut_btn,int glut_state, int x, int y){
+	/*This functions determine the use of the mouse (right click, mouse click...) 
+	and assignes the value to the button according to to the result.*/
 
     if (  (glut_btn & GLUT_LEFT_BUTTON)
           &&  (glut_btn & GLUT_RIGHT_BUTTON) ) {
@@ -124,6 +126,7 @@ void mouse(int glut_btn,int glut_state, int x, int y){
 #endif
 
 void clientCallback(script_error& err){
+	//This function calls the checkError function from graphMaker to check if any error is to declare.
     GraphMaker::getInstance().checkError(err);
 }
 
@@ -151,6 +154,7 @@ int main(int argc, char **argv)
         // imgui
         SimpleUI::bindImGui();
         TrackballUI::trackball().set(v3f(0), v3f(0), quatf(v3f(1, 0, 0), -1.0f)*quatf(v3f(0, 0, 1), 2.5f));
+		//tracking ball position, using quaternions.
         SimpleUI::initImGui();
         SimpleUI::onReshape(g_W, g_H);
 
