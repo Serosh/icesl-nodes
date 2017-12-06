@@ -22,28 +22,31 @@ struct NodeSelecter;
 
 class NodeWindow:public GenericWindow{
     Node* node;
-    std::vector<NodeWindow*> previousConnectedWindow;
+    std::vector<NodeWindow*> previousConnectedWindow; // contains all the windows which are connected to the window of the Node node
 
 public:
     NodeWindow():GenericWindow(){}
     NodeWindow(Node*n, const char *name,v2i pos):GenericWindow(name,pos),node(n)
     {
-        previousConnectedWindow.resize(n->getInputName().size());
-    }
+        previousConnectedWindow.resize(n->getInputName().size()); 
+		// resize the vector previousConnectedWindow 
+	}
 
     NodeWindow(Node*n, const char *name):GenericWindow(name),node(n)
     {
         m_show = true;
-        previousConnectedWindow.resize(n->getInputName().size());
+        previousConnectedWindow.resize(n->getInputName().size()); 
+		// resize the vector previousConnectedWindow 
     }
 
     void drawInputValue();
     void drawOutputValue();
 
-    void connectPreviousWindow(NodeWindow* prev, int inpos, int outpos);
-    void connectPreviousWindow(NodeWindow* prev,std::string in, std::string out);
+    void connectPreviousWindow(NodeWindow* prev, int inpos, int outpos); // connect two nodes together : this and prev 
+    void connectPreviousWindow(NodeWindow* prev,std::string in, std::string out); // connect two nodes together 
     void nodeChange(){
         previousConnectedWindow.resize(node->getInputName().size());
+		// resize the vector previousConnectedWindow 
     }
 
     Node* getNode(){return node;}
@@ -58,6 +61,7 @@ public:
     void renderAndPick(NodeSelecter &ns, bool mouseDown);
     void displayNodeName();
 
+	/* the node nw is removed from the vector of nodes connected to "this" */
     void removeConnectionTo(NodeWindow* nw){
         ForIndex(i,previousConnectedWindow.size()){
             if(previousConnectedWindow[i] == nw){
@@ -81,7 +85,7 @@ struct NodePickedInfo{
 } ;
 
 
-//used to select two nodes to connect them.
+//used to select two nodes to connect them. (original comment)
 struct NodeSelecter{
     NodePickedInfo nodePickedInput;
     NodePickedInfo nodePickedOutput;
@@ -103,6 +107,7 @@ struct NodeSelecter{
         if(nodePickedInput.pos < 0)return;
         if(nodePickedOutput.pos < 0)return;
         nodePickedInput.nodeWindow->connectPreviousWindow(nodePickedOutput.nodeWindow,nodePickedInput.pos,nodePickedOutput.pos);
+		// add the output node to the list of nodes connected to the input node 
         reset();
     }
 

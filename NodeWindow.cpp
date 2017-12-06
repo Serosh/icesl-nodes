@@ -5,17 +5,21 @@
 #include "NodeLua.h"
 
 #include "imgui/imgui.h"
+//imgui is a system enabling developpers to create (among others) graphical interfaces
 
 using namespace std;
 
 //------------------------------------------------------------------
-//render the node
+//render the node (original comment)
 bool NodeWindow::display(){
 
     ImVec2 offsetGUI = ImVec2(m_size[0],m_size[1]);
 
-    ImGui::Begin(m_name.c_str(), &m_show,offsetGUI);
+    ImGui::Begin(m_name.c_str(), &m_show,offsetGUI); 
+	//ImGui::Begin() makes the click upper right corner to close a window available when 'bool* p_open' is passed as an argument of the function
+	// m_name.c_str() is the name of the window, &m_show is the boolean* offsetGUI are flags
     m_drawList = ImGui::GetWindowDrawList();
+	//ImGui::GetWindowDrawList() enables to add custom rendering within a window
     handlePosAndSize();
     m_pos = v2i(ImGui::GetWindowPos().x,ImGui::GetWindowPos().y);
     m_size = v2i(ImGui::GetWindowSize().x,ImGui::GetWindowSize().y);
@@ -30,11 +34,12 @@ bool NodeWindow::display(){
     ImVec2 maxc = ImVec2(ImGui::GetWindowPos().x+ImGui::GetWindowSize().x+err_cont/2,ImGui::GetWindowPos().y+ImGui::GetWindowSize().y+err_cont/2);
 
     //if(ImGui::Button("reload")){
-    //    node->reloadProgram();
+    //    node->reloadProgram(); (original comments)
     //}
-    ImGui::End();
+    ImGui::End(); // finish appending to current window, pop it off the window stack. 
+	//(original comment, maybe it means :finish appending to current window, pop the window stack off)
 
-    //Node* n = node;
+    //Node* n = node; (original comment)
     ForIndex(i,previousConnectedWindow.size()){
         NodeWindow* w= previousConnectedWindow[i];
         if(w == nullptr)continue;
@@ -62,7 +67,7 @@ void NodeWindow::renderAndPick(NodeSelecter &ns, bool mouseDown){
     v2i Mpos = v2i(ImGui::GetMousePos().x,ImGui::GetMousePos().y);
 
 
-    //draw input circles
+    //draw input circles (original comment)
     ForIndex(i,node->getInputName().size()){
         v2i Cpos = v2i(GetInputSlotPos(i).x,GetInputSlotPos(i).y);
         if(sqLength(Cpos-Mpos) < 100){
@@ -80,7 +85,7 @@ void NodeWindow::renderAndPick(NodeSelecter &ns, bool mouseDown){
         color = ImColor(150,150,150,150);
     }
 
-    //draw output circles
+    //draw output circles (original comment)
     ForIndex(i,node->getoutputName().size()){
         v2i Cpos = v2i(GetOutputSlotPos(i).x,GetOutputSlotPos(i).y);
         if(sqLength(Cpos-Mpos) < 100){
@@ -128,7 +133,7 @@ void NodeWindow::displayNodeName()
         MaxInSize = max(MaxInSize,node->getInputName()[i].size() * char_size);
     }
     ForIndex(i,node->getoutputName().size()){
-        //right alignement: displace the cursor by the number of char * the size of a char - the circle ray
+        //right alignement: displace the cursor by the number of char * the size of a char - the circle ray (original comment)
         MaxOutSize = max(MaxOutSize,node->getoutputName()[i].size() * char_size);
     }
     bool open = true;
@@ -146,7 +151,7 @@ void NodeWindow::displayNodeName()
                 |ImGuiWindowFlags_AlwaysAutoResize
                 );
 
-        float posX= GetInputSlotPos(i).x;// + node->getInputName()[i].size() * char_size;
+        float posX= GetInputSlotPos(i).x;// + node->getInputName()[i].size() * char_size; (original comment)
         float posY= GetInputSlotPos(i).y;
         ImGui::SetWindowPos(ImVec2(posX,posY));
         ImGui::Text(node->getInputName()[i].c_str());
@@ -159,7 +164,7 @@ void NodeWindow::displayNodeName()
                 |ImGuiWindowFlags_NoMove
                 |ImGuiWindowFlags_NoSavedSettings
                 |ImGuiWindowFlags_NoTitleBar
-                //|ImGuiWindowFlags_NoBringToFrontOnFocus
+                //|ImGuiWindowFlags_NoBringToFrontOnFocus (original comment)
                 |ImGuiWindowFlags_AlwaysAutoResize
                 );
         float posX = GetOutputSlotPos(i).x;
@@ -176,7 +181,7 @@ void NodeWindow::displayNodeName()
 }
 
 //------------------------------------------------------------------
-//connect two nodes. Cycle are not possible
+//connect two nodes. Cycles are not possible (original comment)
 void NodeWindow::connectPreviousWindow(NodeWindow* prev,int inpos,int outpos){
     if(prev->node->isAscendent(node))return;//prevent cycle
     previousConnectedWindow[inpos] = prev;
@@ -187,7 +192,7 @@ void NodeWindow::connectPreviousWindow(NodeWindow* prev,int inpos,int outpos){
 }
 
 //------------------------------------------------------------------
-//connect two nodes. Cycle are not possible
+//connect two nodes. Cycles are not possible (original comment)
 void NodeWindow::connectPreviousWindow(NodeWindow* prev,string in,string out){
 
     int outpos = prev->node->getIndiceOutByName(out);
