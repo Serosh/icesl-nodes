@@ -34,11 +34,6 @@ std::string openFileDialog(std::string extension)
 	The dialog initially displays the contents of the "./" root directory (third parameter),
 	The parent of the file dialog is set to NULL(the first parameter), and the window title is set to "Open File"(2nd parameter).
 	*/
-	// GetOpenFilename( FileFilter , FilterIndex , Title , ButtonText , MultiSelect )																																																													 
-	// the first parameter  : A string specifying file filtering criteria, in this case it's NULL.
-	// the second parameter : Specifies the index numbers of the default file filtering criteria, from 1 to the number of filters specified in FileFilter.
-	// the third parameter  : Specifies the title of the dialog box. If this argument is omitted, the title is "Open."
-	// the fourth parameter : Macintosh only.
 
 	std::locale::global(std::locale("C"));
 	//std::cerr << "LC_ALL: " << setlocale(LC_ALL, NULL) << std::endl;

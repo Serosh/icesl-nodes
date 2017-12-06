@@ -13,7 +13,8 @@ void Node::onChange(){
 //-------------------------------------------------------
 void Node::makeNewInput(string name){
     if(getPrevNamed().find(name) != getPrevNamed().end())return;
-    getPrevNamed().insert(std::make_pair(name,make_pair(nullptr,"")));
+    getPrevNamed().insert(std::make_pair(name,make_pair(nullptr,""))); 
+	// we add the name of the node to the map with value the tuple (nullptr,"")
     getInputName().push_back(name);
 }
 
