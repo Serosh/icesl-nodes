@@ -28,8 +28,6 @@ std::string openFileDialog(std::string extension)
 	// FC: use QFileDialog::DontUseNativeDialog as otherwise the file dialog won't close
 	// http://qt-project.org/forums/viewthread/34159
 
-
-
 	QString str = QFileDialog::getOpenFileName(NULL, "Open File", "./", extension.c_str(), NULL, QFileDialog::DontUseNativeDialog);
 	//QFileDialog class provides a dialog that allow users to select files or directories.																																																																																							 
 	/** a modal QFileDialog is created using a static function.
