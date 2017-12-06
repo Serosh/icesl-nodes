@@ -28,19 +28,12 @@ std::string openFileDialog(std::string extension)
 	// FC: use QFileDialog::DontUseNativeDialog as otherwise the file dialog won't close
 	// http://qt-project.org/forums/viewthread/34159
 
-
-
 	QString str = QFileDialog::getOpenFileName(NULL, "Open File", "./", extension.c_str(), NULL, QFileDialog::DontUseNativeDialog);
 	//QFileDialog class provides a dialog that allow users to select files or directories.																																																																																							 
 	/** a modal QFileDialog is created using a static function.
 	The dialog initially displays the contents of the "./" root directory (third parameter),
 	The parent of the file dialog is set to NULL(the first parameter), and the window title is set to "Open File"(2nd parameter).
 	*/
-	// GetOpenFilename( FileFilter , FilterIndex , Title , ButtonText , MultiSelect )																																																													 
-	// the first parameter  : A string specifying file filtering criteria, in this case it's NULL.
-	// the second parameter : Specifies the index numbers of the default file filtering criteria, from 1 to the number of filters specified in FileFilter.
-	// the third parameter  : Specifies the title of the dialog box. If this argument is omitted, the title is "Open."
-	// the fourth parameter : Macintosh only.
 
 	std::locale::global(std::locale("C"));
 	//std::cerr << "LC_ALL: " << setlocale(LC_ALL, NULL) << std::endl;
