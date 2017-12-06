@@ -16,10 +16,10 @@ private:
   t_FileTime m_timeStamp;
 
 protected:
-  std::map<std::string,std::pair<Node*,std::string>> prevNamed;
-  std::map<std::string,Node*> nextNamed;
-  std::vector<std::string> inputName;
-  std::vector<std::string> outputName;
+  std::map<std::string,std::pair<Node*,std::string>> prevNamed; // dictionary from a string to a sort of tuple
+  std::map<std::string,Node*> nextNamed; // dictionary from a string to the node named with the string ? 
+  std::vector<std::string> inputName; // list of all the nodes connected to the input of this 
+  std::vector<std::string> outputName;  // list of all the nodes connected to the output of this 
   std::map<std::string,Tweak*> tweaks;
 
   void makeNewInput(std::string name);
@@ -70,7 +70,7 @@ public:
 
   }
 
-  int getIndiceOutByName(std::string s){
+  int getIndiceOutByName(std::string s){ // go through the list of output nodes of this to find the indice corresponding to the name s 
     ForIndex(i,outputName.size()){
       if(strcmp(s.c_str(),outputName[i].c_str()) == 0){
          return i;
@@ -79,7 +79,7 @@ public:
     sl_assert(false);
   }
 
-  int getIndiceInByName(std::string s){
+  int getIndiceInByName(std::string s){// go through the list of input nodes of this to find the indice corresponding to the name s 
     ForIndex(i,inputName.size()){
       if(strcmp(s.c_str(),inputName[i].c_str()) == 0){
          return i;
