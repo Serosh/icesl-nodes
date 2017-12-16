@@ -3,7 +3,7 @@
 #include <regex>
 using namespace std;
 
-
+int Node::counter = 0;
 
 //-------------------------------------------------------
 void Node::onChange(){
@@ -238,24 +238,58 @@ void Node::parse() {
 		getline(input, buff2);
 		tweaks[buff] = new TweakInt(this, name, 10);
 	}
-	getline(input, code_template);
+	getline(input, lua_template);
 }
 
 
 //-------------------------------------------------------
 //write the master lua file by traversing the graph.
-bool Node::writeMaster(ofstream& myfile)
-{
-    std::vector<Node*> ordered_node;
-    orderNode(ordered_node);
-    ForIndex(i,ordered_node.size()){
-        Node* currentNode = ordered_node[i];
-        myfile << currentNode->codeBefore().c_str();
-        myfile << currentNode->m_Program.c_str();
-        myfile << currentNode->codeAfter().c_str();
+//bool Node::writeMaster(ofstream& myfile)
+//{
+//    std::vector<Node*> ordered_node;
+//    orderNode(ordered_node);
+//    ForIndex(i,ordered_node.size()){
+//        Node* currentNode = ordered_node[i];
+//        myfile << currentNode->codeBefore().c_str();
+//        myfile << currentNode->m_Program.c_str();
+//        myfile << currentNode->codeAfter().c_str();
+//
+//    }
+//    return (false); // no error
+//}
+bool Node::writeMaster(ofstream& myfile) {
+	writeMasterRec(myfile);
+	return false;
+}
 
-    }
-    return (false); // no error
+bool Node::writeMasterRec(ofstream& myfile) {
+	for (string& input : inputName) {
+		prevNamed[input].first->writeMasterRec(myfile);
+	}
+	writeNode(myfile);
+	return false;
+}
+
+bool Node::writeNode(ofstream& myfile) {
+	std::string name = "v" + std::to_string(index);
+	std::vector<std::string> args;
+	code_to_emit = name + " = " + lua_template;
+	for (std::string& input : inputName) {
+		args.push_back("v" + std::to_string(prevNamed[input].first->getIndex()));
+	}
+	for (std::map<std::string, Tweak*>::iterator it = tweaks.begin(); it != tweaks.end(); it++) {
+		std::string to_find = "$" + it->first;
+		code_to_emit.replace(code_to_emit.find(to_find), to_find.length(), it->second->getValueOnString());
+	}
+	for (int i = 0; i < nbOfArgs; i++) {
+		std::string to_find = "#" + std::to_string(i);
+		std::string arg = args[i];
+		while (code_to_emit.find(to_find) != std::string::npos) {
+			code_to_emit.replace(code_to_emit.find(to_find), to_find.length(), arg);
+		}
+	}
+	myfile << code_to_emit << std::endl;
+	return false;
 }
 
 //-------------------------------------------------------

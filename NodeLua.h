@@ -19,8 +19,10 @@ protected:
 	std::string name;
 	int nbOfArgs;
 	int nbOfTweaks;
-	std::string code_template;
+	std::string lua_template;
 	std::string code_to_emit;
+	static int counter; 
+	int index;
 
 
   std::map<std::string,std::pair<Node*, std::string>> prevNamed;
@@ -74,7 +76,12 @@ public:
     m_timeStamp = fileTimestamp(m_Path);
     parse();
     errorState = false;
+	index = counter;
+	counter++;
+  }
 
+  int getIndex() {
+	  return index;
   }
 
   int getIndiceOutByName(std::string s){
@@ -106,6 +113,8 @@ public:
   std::string codeAfter(); //code to write after writing the node in the master script
   void removeConnectionTo(Node* n);
   std::string hashProgram(); //hash the file
+  bool writeNode(std::ofstream& myfile);
+  bool writeMasterRec(std::ofstream& myfile);
   bool writeMaster(std::ofstream& myfile); //write the master script of the node.
   void connect(Node* n,std::string outName,int pos); //connect to another node
   bool isAscendent(Node* toConnect); // check if a node is a parent
