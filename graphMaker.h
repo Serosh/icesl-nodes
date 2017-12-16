@@ -57,7 +57,7 @@ public:
        std::string source(PATHTOSRC"/basic_nodes");
        std::string dest(project.nodefolder());
        project.copyDir(source,dest);
-       project.copyEmitNode();
+       //project.copyEmitNode();
   }
   Project& getProject(){
       return project;

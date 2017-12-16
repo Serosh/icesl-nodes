@@ -16,11 +16,18 @@ private:
   t_FileTime m_timeStamp;
 
 protected:
-  std::map<std::string,std::pair<Node*,std::string>> prevNamed;
-  std::map<std::string,Node*> nextNamed;
+	std::string name;
+	int nbOfArgs;
+	int nbOfTweaks;
+	std::string code_template;
+	std::string code_to_emit;
+
+
+  std::map<std::string,std::pair<Node*, std::string>> prevNamed;
+  std::map<std::string, Node*> nextNamed;
   std::vector<std::string> inputName;
   std::vector<std::string> outputName;
-  std::map<std::string,Tweak*> tweaks;
+  std::map<std::string, Tweak*> tweaks;
 
   void makeNewInput(std::string name);
   void makeNewOutput(std::string name);

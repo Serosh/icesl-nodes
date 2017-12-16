@@ -220,9 +220,25 @@ void Node::parseInputAndOutput()
 //parse the code to detect input and output code.
 //it also detect if emit is used for retrocompatibility.
 //also look at the tweaks.
-void Node::parse(){
-    parseTweaks();
-    parseInputAndOutput();
+//void Node::parse(){
+//    parseTweaks();
+//    parseInputAndOutput();
+//}
+void Node::parse() {
+	std::ifstream input(m_Path.c_str());
+	std::string buff;
+	std::string buff2;
+	getline(input, name);
+	getline(input, buff);
+	nbOfArgs = stoi(buff);
+	getline(input, buff);
+	nbOfTweaks = stoi(buff);
+	for (int i = 0; i < nbOfTweaks; i++) {
+		getline(input, buff);
+		getline(input, buff2);
+		tweaks[buff] = new TweakInt(this, name, 10);
+	}
+	getline(input, code_template);
 }
 
 
