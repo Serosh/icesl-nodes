@@ -1,1 +1,6 @@
-output("cube",box(node_scalar("length",10)))
+basic_cube
+0
+1
+side
+int
+cube($side)
