@@ -58,9 +58,10 @@ std::string openPathDialog()
 	.If parent is not 0, the dialog will be displayed centered on the parent widget.*/
 
 	QString path = QFileDialog::getExistingDirectory(NULL, "Select folder", NULL, QFileDialog::DontUseNativeDialog);
+	
 	//The working directory of the dialog is set to "path" .
 	std::locale::global(std::locale("C"));
-
+	
 
 	//std::cerr << "LC_ALL: " << setlocale(LC_ALL, NULL) << std::endl;
 	if (path.isNull()) {
@@ -164,12 +165,24 @@ std::string openPathDialog()
 		SetCurrentDirectoryA(current);  //Change directory to the current one
 		string fname = string(of.lpstrFile);
 		std::string directory;
-		const size_t last_slash_idx = fname.rfind('\\');
-		if (std::string::npos != last_slash_idx) {
-			directory = fname.substr(0, last_slash_idx);
-			return directory;
+		const size_t last_slash_idx = fname.rfind('\\'); 
+		int status = CreateDirectory(fname.c_str(), NULL);
+		FILE* isFile=fopen(fname.c_str(), "r");
+		if (isFile) {
+			fclose(isFile);
+			return fname.substr(0, last_slash_idx); //correction du bug pour fichier
 		}
-		return fname;
+		if ( status== ERROR_PATH_NOT_FOUND) {
+			return "";
+		}
+		else {
+			return fname;
+		}
+		//if (std::string::npos != last_slash_idx) {
+			//directory = fname.substr(0, last_slash_idx);
+			//return directory;
+		//}
+		//return fname;
 	}
 	SetCurrentDirectoryA(current);
 	return "";

@@ -152,7 +152,7 @@ bool Node::writeMaster(ofstream& myfile) {
 }
 
 bool Node::writeMasterRec(ofstream& myfile) {
-	for (string& input : inputName) {
+	for (auto input : inputName) { //erreur possible si on crée un emit puis une sphere et qu'on modifie le tweak
 		prevNamed[input].first->writeMasterRec(myfile);
 	}
 	writeNode(myfile);
