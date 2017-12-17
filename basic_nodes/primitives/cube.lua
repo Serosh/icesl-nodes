@@ -2,5 +2,5 @@ basic_cube
 0
 1
 side
-int
+float
 cube($side)

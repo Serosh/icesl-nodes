@@ -102,7 +102,21 @@ void Node::parse() {
 	for (int i = 0; i < nbOfTweaks; i++) {
 		getline(input, buff);
 		getline(input, buff2);
-		tweaks[buff] = new TweakInt(this, buff, 10);
+		if (buff2 == "int") {
+			tweaks[buff] = new TweakInt(this, buff, 0);
+		}
+		else if (buff2 == "string") {
+			tweaks[buff] = new TweakString(this, buff, "text");
+		}
+		else if (buff2 == "float") {
+			tweaks[buff] = new TweakScalar(this, buff, 0.0);
+		} 
+		else if (buff2 == "slider") {
+			tweaks[buff] = new TweakSlider(this, buff, 0.0, 0.0, 10.0);
+		} 
+		else if (buff2 == "path") {
+			tweaks[buff] = new TweakPath(this, buff, "C:\\");
+		}
 	}
 	getline(input, lua_template);
 	if (m_RelativePath != "emit.lua") {
