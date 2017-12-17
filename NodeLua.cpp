@@ -155,9 +155,9 @@ bool Node::writeMasterRec(ofstream& myfile) {
 }
 
 bool Node::writeNode(ofstream& myfile) {
-	std::string name = "v" + std::to_string(index);
+	std::string variable = "v" + std::to_string(index);
 	std::vector<std::string> args;
-	code_to_emit = name + " = " + lua_template;
+	code_to_emit = variable + " = " + lua_template;
 	for (std::string& input : inputName) {
 		args.push_back("v" + std::to_string(prevNamed[input].first->getIndex()));
 	}
