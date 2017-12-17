@@ -1,2 +1,5 @@
-
-emit(input("Shape"),node_int("brush",0))
+emit
+1
+shape
+0
+emit(#shape)
