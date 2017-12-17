@@ -1,6 +1,7 @@
 #include "graphMaker.h"
 #include "NodeLua.h"
 #include <regex>
+#include <string>
 using namespace std;
 
 int Node::counter = 0;
@@ -231,6 +232,10 @@ void Node::parse() {
 	getline(input, name);
 	getline(input, buff);
 	nbOfArgs = stoi(buff);
+	for (int i = 0; i < nbOfArgs; i++) {
+		getline(input, buff);
+		makeNewInput(buff);
+	}
 	getline(input, buff);
 	nbOfTweaks = stoi(buff);
 	for (int i = 0; i < nbOfTweaks; i++) {
@@ -239,6 +244,10 @@ void Node::parse() {
 		tweaks[buff] = new TweakInt(this, name, 10);
 	}
 	getline(input, lua_template);
+	if (m_RelativePath != "emit.lua") {
+		makeNewOutput("output");
+	}
+	input.close();
 }
 
 
@@ -281,12 +290,14 @@ bool Node::writeNode(ofstream& myfile) {
 		std::string to_find = "$" + it->first;
 		code_to_emit.replace(code_to_emit.find(to_find), to_find.length(), it->second->getValueOnString());
 	}
-	for (int i = 0; i < nbOfArgs; i++) {
-		std::string to_find = "#" + std::to_string(i);
+	int i = 0;
+	for (std::string& input : inputName) {
+		std::string to_find = "#" + input;
 		std::string arg = args[i];
 		while (code_to_emit.find(to_find) != std::string::npos) {
 			code_to_emit.replace(code_to_emit.find(to_find), to_find.length(), arg);
 		}
+		i++;
 	}
 	myfile << code_to_emit << std::endl;
 	return false;
