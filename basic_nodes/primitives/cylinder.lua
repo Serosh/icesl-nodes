@@ -5,4 +5,4 @@ point2
 1
 radius
 float
-cylinder(radius,point1,point2)
+cylinder($radius,$point1,$point2)
