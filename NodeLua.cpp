@@ -1,9 +1,10 @@
 #include "graphMaker.h"
 #include "NodeLua.h"
 #include <regex>
+#include <string>
 using namespace std;
 
-
+int Node::counter = 0;
 
 //-------------------------------------------------------
 //open master.lua and read all
@@ -90,161 +91,96 @@ void Node::reloadProgram(){
 }
 
 //-------------------------------------------------------
-//create the tweaks by parsing the lua file.
-void Node::parseTweaks()
-{
-    //first remove comm's
-    string toParse = m_Program;
-    string uncommented;
-    std::regex nocomment("(--\\[\\[(.|\n)*?\\]\\]--)");
-    regex_replace(std::back_inserter(uncommented),toParse.begin(),toParse.end(),nocomment,"$2");
-
-    std::regex nocomment2("(--.*\\n)");
-    string uncommented2;
-    regex_replace(std::back_inserter(uncommented2),uncommented.begin(),uncommented.end(),nocomment2,"$2");
-    string float_expr = "[ \\n]*(-?[0-9]*[.]?[0-9]*(?:[Ee][+-]?[0-9]+)?)[ \\n]*";
-    string name_expr = "[ \\n]*[\"\']([^\'\"]*)[\"\'][ \\n]*";
-    //look for node_string
-    try{
-        string income = uncommented2;
-        string expr = string("node_string\\(") + name_expr + "," + name_expr + "\\)";
-        std::regex scalarEx(expr);
-        std::regex_iterator<std::string::iterator> rit ( income.begin(), income.end(), scalarEx );
-        std::regex_iterator<std::string::iterator> rend;
-        while(rit != rend){
-            if(tweaks.find(rit->str(1))==tweaks.end())tweaks[rit->str(1)] = new TweakString(this,rit->str(1),rit->str(2));
-            rit++;
-        }
-    }catch (const std::regex_error& e) {
-        std::cout << "regex_error caught: " << e.what() << '\n';
-    }
-    try{
-        string income = uncommented2;
-        string expr = string("node_scalar\\(") + name_expr + "," + float_expr + "\\)";
-        std::regex scalarEx(expr);
-        std::regex_iterator<std::string::iterator> rit ( income.begin(), income.end(), scalarEx );
-        std::regex_iterator<std::string::iterator> rend;
-        while(rit != rend){
-            if(tweaks.find(rit->str(1))==tweaks.end())tweaks[rit->str(1)] = new TweakScalar(this,rit->str(1),stof(rit->str(2)));
-            rit++;
-        }
-    }catch (const std::regex_error& e) {
-        std::cout << "regex_error caught: " << e.what() << '\n';
-    }
-    try{
-        string income = uncommented2;
-        string expr = string("node_scalar\\(") + name_expr + "," + float_expr + "," + float_expr + "," + float_expr + "\\)";
-        std::regex scalarEx(expr);
-        std::regex_iterator<std::string::iterator> rit ( income.begin(), income.end(), scalarEx );
-        std::regex_iterator<std::string::iterator> rend;
-        while(rit != rend){
-            if(tweaks.find(rit->str(1))==tweaks.end())tweaks[rit->str(1)] = new TweakSlider(this,rit->str(1),stof(rit->str(2)),stof(rit->str(3)),stof(rit->str(4)));
-            rit++;
-        }
-    }catch (const std::regex_error& e) {
-        std::cout << "regex_error caught: " << e.what() << '\n';
-    }
-    try{
-        string income = uncommented2;
-        const char* expr = "node_int\\([ \\n]*[\"\']([\\w_]*)[\"\'][ \\n]*,[ \\n]*(-?[0-9]*)[ \\n]*\\)";
-        std::regex scalarEx(expr);
-        std::regex_iterator<std::string::iterator> rit ( income.begin(), income.end(), scalarEx );
-        std::regex_iterator<std::string::iterator> rend;
-        while(rit != rend){
-            if(tweaks.find(rit->str(1))==tweaks.end())tweaks[rit->str(1)] = new TweakInt(this,rit->str(1),stoi(rit->str(2)));
-            rit++;
-        }
-    }catch (const std::regex_error& e) {
-        std::cout << "regex_error caught: " << e.what() << '\n';
-    }
-    try{
-        string income = uncommented2;
-        string expr = string("node_path\\(") + name_expr + "," + name_expr + "\\)";
-        std::regex scalarEx(expr);
-        std::regex_iterator<std::string::iterator> rit ( income.begin(), income.end(), scalarEx );
-        std::regex_iterator<std::string::iterator> rend;
-        while(rit != rend){
-            if(tweaks.find(rit->str(1))==tweaks.end())tweaks[rit->str(1)] = new TweakPath(this,rit->str(1),rit->str(2));
-            rit++;
-        }
-    }catch (const std::regex_error& e) {
-        std::cout << "regex_error caught: " << e.what() << '\n';
-    }
-}
-
-
-//------------------------------------------------------------------------------------
-void Node::parseInputAndOutput()
-{
-    string toParse = m_Program;
-    string uncommented;
-    std::regex nocomment("(--\\[\\[(.|\n)*?\\]\\]--)");
-    regex_replace(std::back_inserter(uncommented),toParse.begin(),toParse.end(),nocomment,"$2");
-
-    std::regex nocomment2("(--.*\\n)");
-    string uncommented2;
-    regex_replace(std::back_inserter(uncommented2),uncommented.begin(),uncommented.end(),nocomment2,"$2");
-
-    try{
-        string outcome = uncommented2;
-        std::regex outputEx("output\\([ \n]*[\"\']([\\w_]*)[\"\'][ \n]*,(.|\n)*?\\)");
-        std::smatch sm;
-        while(regex_search (outcome,sm,outputEx)){
-            makeNewOutput(sm[1]);
-            outcome = sm.suffix().str();
-        }
-    }catch (const std::regex_error& e) {
-        std::cout << "regex_error caught: " << e.what() << '\n';
-    }
-    try{
-        string income = uncommented2;
-        std::regex inputEx("input\\([ \n]*[\"\']([\\w_]*)[\"\'][ \n]*\\)");
-        std::smatch sm;
-        while(regex_search (income,sm,inputEx)){
-            makeNewInput(sm[1]);
-            income = sm.suffix().str();
-        }
-    }catch (const std::regex_error& e) {
-        std::cout << "regex_error caught: " << e.what() << '\n';
-    }
-    try{
-        string income = uncommented2;
-        std::regex outputEx("emit");
-        std::smatch sm;
-        if(regex_search(income,sm,outputEx)){
-            hasEmitAndNotOutput = true;
-            if(!m_emitingNode)makeNewOutput("emit");
-        }
-    }catch (const std::regex_error& e) {
-        std::cout << "regex_error caught: " << e.what() << '\n';
-    }
-
-}
-
-//-------------------------------------------------------
-//parse the code to detect input and output code.
-//it also detect if emit is used for retrocompatibility.
-//also look at the tweaks.
-void Node::parse(){
-    parseTweaks();
-    parseInputAndOutput();
+void Node::parse() {
+	std::ifstream input(m_Path.c_str());
+	std::string buff;
+	std::string buff2;
+	getline(input, name);
+	getline(input, buff);
+	nbOfArgs = stoi(buff);
+	for (int i = 0; i < nbOfArgs; i++) {
+		getline(input, buff);
+		makeNewInput(buff);
+	}
+	getline(input, buff);
+	nbOfTweaks = stoi(buff);
+	for (int i = 0; i < nbOfTweaks; i++) {
+		getline(input, buff);
+		getline(input, buff2);
+		if (buff2 == "int") {
+			tweaks[buff] = new TweakInt(this, buff, 0);
+		}
+		else if (buff2 == "string") {
+			tweaks[buff] = new TweakString(this, buff, "text");
+		}
+		else if (buff2 == "float") {
+			tweaks[buff] = new TweakScalar(this, buff, 0.0);
+		} 
+		else if (buff2 == "slider") {
+			tweaks[buff] = new TweakSlider(this, buff, 0.0, 0.0, 10.0);
+		} 
+		else if (buff2 == "path") {
+			tweaks[buff] = new TweakPath(this, buff, "C:\\");
+		}
+	}
+	getline(input, lua_template);
+	if (m_RelativePath != "emit.lua") {
+		makeNewOutput("output");
+	}
+	input.close();
 }
 
 
 //-------------------------------------------------------
 //write the master lua file by traversing the graph.
-bool Node::writeMaster(ofstream& myfile)
-{
-    std::vector<Node*> ordered_node;
-    orderNode(ordered_node);
-    ForIndex(i,ordered_node.size()){
-        Node* currentNode = ordered_node[i];
-        myfile << currentNode->codeBefore().c_str();
-        myfile << currentNode->m_Program.c_str();
-        myfile << currentNode->codeAfter().c_str();
+//bool Node::writeMaster(ofstream& myfile)
+//{
+//    std::vector<Node*> ordered_node;
+//    orderNode(ordered_node);
+//    ForIndex(i,ordered_node.size()){
+//        Node* currentNode = ordered_node[i];
+//        myfile << currentNode->codeBefore().c_str();
+//        myfile << currentNode->m_Program.c_str();
+//        myfile << currentNode->codeAfter().c_str();
+//
+//    }
+//    return (false); // no error
+//}
+bool Node::writeMaster(ofstream& myfile) {
+	writeMasterRec(myfile);
+	return false;
+}
 
-    }
-    return (false); // no error
+bool Node::writeMasterRec(ofstream& myfile) {
+	for (string& input : inputName) {
+		prevNamed[input].first->writeMasterRec(myfile);
+	}
+	writeNode(myfile);
+	return false;
+}
+
+bool Node::writeNode(ofstream& myfile) {
+	std::string name = "v" + std::to_string(index);
+	std::vector<std::string> args;
+	code_to_emit = name + " = " + lua_template;
+	for (std::string& input : inputName) {
+		args.push_back("v" + std::to_string(prevNamed[input].first->getIndex()));
+	}
+	for (std::map<std::string, Tweak*>::iterator it = tweaks.begin(); it != tweaks.end(); it++) {
+		std::string to_find = "$" + it->first;
+		code_to_emit.replace(code_to_emit.find(to_find), to_find.length(), it->second->getValueOnString());
+	}
+	int i = 0;
+	for (std::string& input : inputName) {
+		std::string to_find = "#" + input;
+		std::string arg = args[i];
+		while (code_to_emit.find(to_find) != std::string::npos) {
+			code_to_emit.replace(code_to_emit.find(to_find), to_find.length(), arg);
+		}
+		i++;
+	}
+	myfile << code_to_emit << std::endl;
+	return false;
 }
 
 //-------------------------------------------------------

@@ -77,8 +77,9 @@ public:
        project.createNodefolder(); //create a folder in which the nodes of the project are going to be
        std::string source(PATHTOSRC"/basic_nodes"); 
        std::string dest(project.nodefolder());
-       project.copyDir(source,dest); //function that return false
-       project.copyEmitNode(); //add the emit node in the project
+
+       project.copyDir(source,dest);//function that returns false
+       //project.copyEmitNode();
   }
   Project& getProject(){
       return project;

@@ -12,8 +12,8 @@ void GraphMaker::onChange()
   //create master script for emitNode
   ofstream file;
   file.open("master.lua");
-  file << loadFileIntoString(PATHTOSRC"/lua_constant/header.lua");
-  ForIndex(i, m_NodeGraph.nodeWindows.size()){ 
+  //file << loadFileIntoString(PATHTOSRC"/lua_constant/header.lua");
+  ForIndex(i, m_NodeGraph.nodeWindows.size()){
     Node* n = m_NodeGraph.nodeWindows[i]->getNode();
     if (n->isEmitingNode()){
       n->writeMaster(file);
