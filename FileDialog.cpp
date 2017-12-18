@@ -168,9 +168,9 @@ std::string openPathDialog()
 		const size_t last_slash_idx = fname.rfind('\\'); 
 		int status = CreateDirectory(fname.c_str(), NULL);
 		FILE* isFile=fopen(fname.c_str(), "r");
-		if (isFile) {
+		if (isFile) { //if the user accidentaly clocked on a file create the project into the current directory
 			fclose(isFile);
-			return fname.substr(0, last_slash_idx); //correction du bug pour fichier
+			return fname.substr(0, last_slash_idx); 
 		}
 		if ( status== ERROR_PATH_NOT_FOUND) {
 			return "";

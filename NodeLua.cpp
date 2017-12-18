@@ -152,8 +152,14 @@ bool Node::writeMaster(ofstream& myfile) {
 }
 
 bool Node::writeMasterRec(ofstream& myfile) {
-	for (auto input : inputName) { //erreur possible si on crée un emit puis une sphere et qu'on modifie le tweak
+
+	for (auto input : inputName) { 
+		if (prevNamed[input].first == nullptr) {
+			std::cerr << "erreur ecriture" << std::endl;
+			return true;
+		}//necessaire car si emit sans input et rafraichissement => bug
 		prevNamed[input].first->writeMasterRec(myfile);
+		
 	}
 	writeNode(myfile);
 	return false;
