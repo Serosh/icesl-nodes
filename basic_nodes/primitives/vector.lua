@@ -1,0 +1,10 @@
+basic_vector
+0
+3
+x_coord
+float
+y_coord
+float
+z_coord
+float
+v($x_coord,$y_coord,$z_coord)

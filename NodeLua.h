@@ -16,11 +16,19 @@ private:
   t_FileTime m_timeStamp;
 
 protected:
-  std::map<std::string,std::pair<Node*,std::string>> prevNamed;
-  std::map<std::string,Node*> nextNamed;
+	std::string name;
+	int nbOfArgs;
+	int nbOfTweaks;
+	std::string lua_template;
+	std::string code_to_emit;
+	static int counter; 
+	int index;
+
+  std::map<std::string,std::pair<Node*, std::string>> prevNamed;
+  std::map<std::string, Node*> nextNamed;
   std::vector<std::string> inputName;
   std::vector<std::string> outputName;
-  std::map<std::string,Tweak*> tweaks;
+  std::map<std::string, Tweak*> tweaks;
 
   void makeNewInput(std::string name);
   void makeNewOutput(std::string name);
@@ -67,10 +75,15 @@ public:
     m_timeStamp = fileTimestamp(m_Path);
     parse();
     errorState = false;
-
+	index = counter;
+	counter++;
   }
 
-  int getIndiceOutByName(std::string s){
+  int getIndex() {
+	  return index;
+  }
+
+  int getIndiceOutByName(std::string s){ // go through the list of output nodes of this to find the indice corresponding to the name s 
     ForIndex(i,outputName.size()){
       if(strcmp(s.c_str(),outputName[i].c_str()) == 0){
          return i;
@@ -79,7 +92,7 @@ public:
     sl_assert(false);
   }
 
-  int getIndiceInByName(std::string s){
+  int getIndiceInByName(std::string s){// go through the list of input nodes of this to find the indice corresponding to the name s 
     ForIndex(i,inputName.size()){
       if(strcmp(s.c_str(),inputName[i].c_str()) == 0){
          return i;
@@ -99,6 +112,8 @@ public:
   std::string codeAfter(); //code to write after writing the node in the master script
   void removeConnectionTo(Node* n);
   std::string hashProgram(); //hash the file
+  bool writeNode(std::ofstream& myfile);
+  bool writeMasterRec(std::ofstream& myfile);
   bool writeMaster(std::ofstream& myfile); //write the master script of the node.
   void connect(Node* n,std::string outName,int pos); //connect to another node
   bool isAscendent(Node* toConnect); // check if a node is a parent
