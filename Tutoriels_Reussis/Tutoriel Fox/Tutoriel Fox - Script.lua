@@ -1,0 +1,8 @@
+v9 = load('C:/Users/Ghizlane/Desktop/fox.stl')
+v4 = emit(v9)
+v9 = load('C:/Users/Ghizlane/Desktop/fox.stl')
+v8 = v(0.000000,1.000000,0.000000)
+v7 = v9*mirror(v8)
+v3 = v(0.000000,-70.000000,0.000000)
+v5 = v7*translate(v3)
+v6 = emit(v5)
