@@ -131,7 +131,6 @@ void Node::parse() {
 }
 
 
-
 //-------------------------------------------------------
 //write the master lua file by traversing the graph.
 //bool Node::writeMaster(ofstream& myfile)
