@@ -21,6 +21,7 @@ protected:
 	int nbOfTweaks;
 	std::string lua_template;
 	std::string code_to_emit;
+	bool isEmitted;
 	static int counter; 
 	int index;
 
@@ -62,6 +63,7 @@ public:
   std::map<std::string,Tweak*>& getTweaks(){ return tweaks;}
   Node()
   {
+	  isEmitted = false;
       m_emitingNode = false;
       errorState = false;
       hasEmitAndNotOutput = false;
@@ -69,6 +71,7 @@ public:
   }
   Node(std::string path, std::string relativePath):m_Path(path)
   {
+	isEmitted = false;
     m_RelativePath = extractFileName(relativePath);
     m_Program = loadFileIntoString(m_Path.c_str());
     m_emitingNode = strcmp(m_RelativePath.c_str(),"emit.lua") == 0;
@@ -107,12 +110,13 @@ public:
   std::string getPath(){return m_Path;}
   void changePath(std::string path,Project p);
   std::string getRelativePath(){return m_RelativePath;}
+  void setEmitted(bool isEmitted) { this->isEmitted = isEmitted; }
 
   std::string codeBefore(); //code to write before writing the node in the master script
   std::string codeAfter(); //code to write after writing the node in the master script
   void removeConnectionTo(Node* n);
   std::string hashProgram(); //hash the file
-  bool writeNode(std::ofstream& myfile);
+  void writeNode(std::ofstream& myfile);
   bool writeMasterRec(std::ofstream& myfile);
   bool writeMaster(std::ofstream& myfile); //write the master script of the node.
   void connect(Node* n,std::string outName,int pos); //connect to another node

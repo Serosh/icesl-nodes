@@ -147,8 +147,7 @@ void Node::parse() {
 //    return (false); // no error
 //}
 bool Node::writeMaster(ofstream& myfile) {
-	writeMasterRec(myfile);
-	return false;
+	return writeMasterRec(myfile);
 }
 
 bool Node::writeMasterRec(ofstream& myfile) {
@@ -165,28 +164,30 @@ bool Node::writeMasterRec(ofstream& myfile) {
 	return false;
 }
 
-bool Node::writeNode(ofstream& myfile) {
-	std::string variable = "v" + std::to_string(index);
-	std::vector<std::string> args;
-	code_to_emit = variable + " = " + lua_template;
-	for (std::string& input : inputName) {
-		args.push_back("v" + std::to_string(prevNamed[input].first->getIndex()));
-	}
-	for (std::map<std::string, Tweak*>::iterator it = tweaks.begin(); it != tweaks.end(); it++) {
-		std::string to_find = "$" + it->first;
-		code_to_emit.replace(code_to_emit.find(to_find), to_find.length(), it->second->getValueOnString());
-	}
-	int i = 0;
-	for (std::string& input : inputName) {
-		std::string to_find = "#" + input;
-		std::string arg = args[i];
-		while (code_to_emit.find(to_find) != std::string::npos) {
-			code_to_emit.replace(code_to_emit.find(to_find), to_find.length(), arg);
+void Node::writeNode(ofstream& myfile) {
+	if (!isEmitted) {
+		std::string variable = "v" + std::to_string(index);
+		std::vector<std::string> args;
+		code_to_emit = variable + " = " + lua_template;
+		for (std::string& input : inputName) {
+			args.push_back("v" + std::to_string(prevNamed[input].first->getIndex()));
 		}
-		i++;
+		for (std::map<std::string, Tweak*>::iterator it = tweaks.begin(); it != tweaks.end(); it++) {
+			std::string to_find = "$" + it->first;
+			code_to_emit.replace(code_to_emit.find(to_find), to_find.length(), it->second->getValueOnString());
+		}
+		int i = 0;
+		for (std::string& input : inputName) {
+			std::string to_find = "#" + input;
+			std::string arg = args[i];
+			while (code_to_emit.find(to_find) != std::string::npos) {
+				code_to_emit.replace(code_to_emit.find(to_find), to_find.length(), arg);
+			}
+			i++;
+		}
+		myfile << code_to_emit << std::endl;
+		isEmitted = true;
 	}
-	myfile << code_to_emit << std::endl;
-	return false;
 }
 
 //-------------------------------------------------------
