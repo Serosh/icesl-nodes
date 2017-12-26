@@ -3,12 +3,15 @@
 
 #include "imgui/imgui.h"
 #include <iostream>
+
 #include <LibSL/LibSL.h>
 #ifndef WIN32
+#include <sys/types.h>
 #include <boost/filesystem.hpp>
 #endif
 
 #ifdef WIN32
+#include <dirent.h>
 #include "Windows.h"
 #endif
 
@@ -132,20 +135,21 @@ public:
   //idem tout ce qui est precedement mais si WIN32 est defini
   void importLua(std::string srcPath) 
   {
-    std::string nodeDir = this->path + "/node/";
+    std::string nodeDir = this->path + "\\node\\";
     nodeDir += extractFileName(srcPath);
     CopyFile(srcPath.c_str(), nodeDir.c_str(), FALSE);
   }
 
   void createNodefolder() 
   {
-    std::string NodeDir = path + "/node";
+    std::string NodeDir = path + "\\node";
+	puts(NodeDir.c_str());
     createDirectory(NodeDir.c_str());
   }
 
   void listLuaFileInDir(std::vector<std::string>& files) 
   {
-    std::string NodeDir = path + "/node";
+    std::string NodeDir = path + "\\node";
     listFiles(NodeDir.c_str(), files);
   }
 
@@ -172,12 +176,72 @@ public:
 
   }
 
+  bool copyFile(std::string filename, std::string dest) {
+
+	  puts(filename.c_str());
+
+	  std::ifstream infile(filename.c_str(), std::ifstream::binary);
+	  std::ofstream outfile(dest.c_str(), std::ofstream::binary);
+
+	  infile.seekg(0, infile.end); 
+
+	  long size = infile.tellg(); //size of the infile
+
+	  if (size == -1) {
+		  std::cerr << "problem with the copy" << std::endl;
+		  return false;
+	  }
+
+	  infile.seekg(0); 
+	  char* buffer = new char[size];
+
+	  infile.read(buffer, size);
+	  outfile.write(buffer, size);
+
+	  outfile.close();
+	  infile.close();
+
+	  delete[] buffer;
+
+	  return true;
+  }
   //---------------------------------------------------
-  //Must copy a Directory source to a directory destination. Not yet implemented
-  //TODO: To implement
+  //Must copy a Directory source to a directory destination. Using dirent for crossplatform
+  bool isDir(struct dirent* file)
+  {
+	  return ((strchr(file->d_name, '.')) == NULL)? true : false;
+  }
+
   bool copyDir(std::string source, std::string destination)
   {
-    return false;
+	DIR * rep = opendir(source.c_str());
+	if (rep == NULL) {
+		std::cerr << "cannot open : " << source << std::endl;
+		return false;
+	}
+
+	struct dirent* file = NULL;
+	bool isCopied(false);
+	while ((file = readdir(rep)) != NULL) {
+		puts(file->d_name);
+		if (isDir(file)) {
+			
+			isCopied = copyDir(source + std::string(file->d_name) + std::string("/"), destination);
+		}
+		else {
+			if (strcmp(file->d_name, ".") != 0 && strcmp(file->d_name, "..") != 0) {
+				isCopied = copyFile(source +std::string(file->d_name), destination +std::string(file->d_name));
+			}
+			else isCopied = true;
+		}
+		if (!isCopied) return false;
+	}
+	if (closedir(rep) == -1) {
+		std::cerr << "cannot close : " << source << std::endl;
+		return false;
+	}
+
+    return true;
   }
 #endif
 
@@ -194,7 +258,7 @@ public:
   // return string of node folder.
   std::string nodefolder()
   {
-    std::string NodeDir = path + "/node/";
+    std::string NodeDir = path + "\\node\\";
     return NodeDir;
   }
 
@@ -244,7 +308,7 @@ public:
   std::string renderFileSelecter(v2i pos){
     std::string nameDir = "";
     ImGui::Begin("Menu");
-    nameDir = recursiveFileSelecter(path + "/node/");
+    nameDir = recursiveFileSelecter(path + "\\node\\");
     ImGui::SetWindowPos(ImVec2(pos[0], pos[1]));
     ImGui::End();
     return nameDir;
