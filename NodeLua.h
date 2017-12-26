@@ -16,20 +16,39 @@ private:
   t_FileTime m_timeStamp;
 
 protected:
+	/* Name of the node's function. Not used at the moment. */
 	std::string name;
+	/* Number of meshes the node takes as arguments. */
 	int nbOfArgs;
+	/* Number of tweaks the node takes as arguments. */
 	int nbOfTweaks;
+	/* Template of the Lua function corresponding to the node. */
 	std::string lua_template;
+	/* The Lua code that will be written in master.lua. */
 	std::string code_to_emit;
+	/* True if the corresponding code has already been written in master.lua, else false. */
 	bool isEmitted;
+	/* Static int that counts the number of nodes. */
 	static int counter; 
+	/* Unique identifier. 0 for the first node created, 1 for the second, etc. */
 	int index;
 
-  std::map<std::string,std::pair<Node*, std::string>> prevNamed;
-  std::map<std::string, Node*> nextNamed;
-  std::vector<std::string> inputName;
-  std::vector<std::string> outputName;
-  std::map<std::string, Tweak*> tweaks;
+	/* Stores the inputs of the node.
+	 * Key : name of the input.
+	 * Value : a pair that couples together a pointer to the input node and the name of the output in the input node. */
+	std::map<std::string,std::pair<Node*, std::string>> prevNamed;
+	/* Stores the outputs of the node. 
+	 * Key : name of the output. 
+	 * Value : pointer to the output node. */
+	std::map<std::string, Node*> nextNamed;
+	/* Stores the names of all the inputs of the nodes. */
+	std::vector<std::string> inputName;
+	/* Stores the names of all the outputs of the nodes. */
+	std::vector<std::string> outputName;
+	/* Stores all the tweaks corresponding to the node. 
+	 * Key : name of the tweak (ex: "radius").
+	 * Value : pointer to the tweak. */
+	std::map<std::string, Tweak*> tweaks;
 
   void makeNewInput(std::string name);
   void makeNewOutput(std::string name);
