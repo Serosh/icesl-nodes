@@ -197,7 +197,8 @@ void GraphMaker::onIdle(){
 
 //-------------------------------------
 void GraphMaker::renderImgui(){
-  bool mouseDown = ImGui::IsMouseClicked(0);
+  bool mouseDown = ImGui::IsMouseClicked(0);         // Left click
+  bool mouseDownMiddle = ImGui::IsMouseClicked(2);   // Scroll click
   onIdle();
   if (m_showRMenu){
     if (hasActiveProject()){
@@ -214,17 +215,25 @@ void GraphMaker::renderImgui(){
     if (toDelete) {//clicked on the little cross
       deleteNodeWindow(getNodeWindows()[i]);
     } else {
-      getNodeWindows()[i]->renderAndPick(m_nodeSelecter, mouseDown);
+      getNodeWindows()[i]->renderAndPick(m_nodeSelecter, mouseDown, mouseDownMiddle);
     }
   }
   //nothing has been picked but mouse was Down
-  if (mouseDown && (!m_nodeSelecter.outputHasBeenPicked && !m_nodeSelecter.inputHasBeenPicked)){
+  if ((mouseDown || mouseDownMiddle) && (!m_nodeSelecter.outputHasBeenPicked && !m_nodeSelecter.inputHasBeenPicked) 
+	  && (!m_nodeSelecter.outputHasBeenPickedToDelete && !m_nodeSelecter.inputHasBeenPickedToDelete)){
     m_nodeSelecter.reset();
   }
-  m_nodeSelecter.connect();
+  m_nodeSelecter.connect(); // Make the connection between the output and input selected
+  m_nodeSelecter.disconnect(); // Remove connection between the output and input selected
+  
+  // By default, nothing is selected
   m_nodeSelecter.outputHasBeenPicked = false;
   m_nodeSelecter.inputHasBeenPicked = false;
+  m_nodeSelecter.outputHasBeenPickedToDelete = false;
+  m_nodeSelecter.inputHasBeenPickedToDelete = false;
+
   console.display();
+
   ImGui::Render();
 
 }

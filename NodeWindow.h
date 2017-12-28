@@ -61,16 +61,14 @@ public:
 
 	
     bool display();// display the window of the node
-    void renderAndPick(NodeSelecter &ns, bool mouseDown);
+    void renderAndPick(NodeSelecter &ns, bool mouseDown, bool mouseDownMiddle);
     void displayNodeName();
 
 	/* the node nw is removed from the vector of nodes connected to "this" */
     void removeConnectionTo(NodeWindow* nw){
         ForIndex(i,previousConnectedWindow.size()){
             if(previousConnectedWindow[i] == nw){
-				//nw->node->removeConnectionTo(previousConnectedWindow[i]->node);
                 previousConnectedWindow[i] = nullptr;
-				//previousConnectedWindow[i]->node->removeConnectionTo(nw->node);
             }
         }
 		
@@ -93,32 +91,62 @@ struct NodePickedInfo{
 } ;
 
 
-//used to select two nodes to connect them. (original comment)
+//used to select two nodes to connect them or to remove the connection between them
 struct NodeSelecter{
+
     NodePickedInfo nodePickedInput;
     NodePickedInfo nodePickedOutput;
+	NodePickedInfo nodePickedInputToDelete;
+	NodePickedInfo nodePickedOutputToDelete;
+
     bool inputHasBeenPicked;
     bool outputHasBeenPicked;
+	bool inputHasBeenPickedToDelete;
+	bool outputHasBeenPickedToDelete;
 
     NodeSelecter(){
         inputHasBeenPicked  = false;
         outputHasBeenPicked = false;
+		inputHasBeenPickedToDelete = false;
+		outputHasBeenPickedToDelete = false;
     }
 
+	// If nothing has been picked but mouse was down, we make a reset
     void reset(){
         nodePickedInput.nodeWindow  = nullptr;
         nodePickedOutput.nodeWindow = nullptr;
         nodePickedInput.pos  = 0;
         nodePickedOutput.pos = 0;
+		nodePickedInputToDelete.nodeWindow = nullptr;
+		nodePickedOutputToDelete.nodeWindow = nullptr;
+		nodePickedInputToDelete.pos = 0;
+		nodePickedOutputToDelete.pos = 0;
     }
+
     void connect(){
         if(nodePickedInput.nodeWindow == nullptr)return;
         if(nodePickedOutput.nodeWindow == nullptr)return;
         if(nodePickedInput.pos < 0)return;
         if(nodePickedOutput.pos < 0)return;
-        nodePickedInput.nodeWindow->connectPreviousWindow(nodePickedOutput.nodeWindow,nodePickedInput.pos,nodePickedOutput.pos);
+        
+		nodePickedInput.nodeWindow->connectPreviousWindow(nodePickedOutput.nodeWindow,nodePickedInput.pos,nodePickedOutput.pos);
 		// add the output node to the list of nodes connected to the input node 
         reset();
     }
+
+	void disconnect() {
+		if (nodePickedInputToDelete.nodeWindow == nullptr)return;
+		if (nodePickedOutputToDelete.nodeWindow == nullptr)return;
+		if (nodePickedInputToDelete.pos < 0)return;
+		if (nodePickedOutputToDelete.pos < 0)return;
+
+		// Remove connections both between Nodes and NodeWindows
+		nodePickedInputToDelete.nodeWindow->removeConnectionTo(nodePickedOutputToDelete.nodeWindow);
+		nodePickedOutputToDelete.nodeWindow->removeConnectionTo(nodePickedInputToDelete.nodeWindow);
+		nodePickedInputToDelete.nodeWindow->getNode()->removeConnectionTo(nodePickedOutputToDelete.nodeWindow->getNode());
+		nodePickedOutputToDelete.nodeWindow->getNode()->removeConnectionTo(nodePickedInputToDelete.nodeWindow->getNode());
+		
+		reset();
+	}
 
 };

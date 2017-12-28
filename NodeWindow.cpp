@@ -53,9 +53,7 @@ bool NodeWindow::display(){
         ImVec2 p3 = ImVec2(p1.x+50,p1.y);
         ImVec2 p4 = ImVec2(p2.x-50,p2.y);
         m_drawList->AddBezierCurve(p1, p3, p4, p2, ImColor(200,200,100), 3.0f);
-		//m_drawList->AddCircleFilled(p1, 10, ImColor(150, 150, 150, 150), 64);
-		//m_drawList->AddCircleFilled(p2, 10, ImColor(150, 150, 150, 150), 64);
-		//w->isConnected = true;
+
     }
     if(node->isInErrorState()){                                         // Gestion d'erreur 
         m_drawList->AddRect(minc,maxc, ImColor(150,0,0,150),10.0,0xFF,err_cont);
@@ -66,8 +64,9 @@ bool NodeWindow::display(){
 
 }
 
+
 //------------------------------------------------------------------
-void NodeWindow::renderAndPick(NodeSelecter &ns, bool mouseDown){       // create circles which link the different nodes to each other
+void NodeWindow::renderAndPick(NodeSelecter &ns, bool mouseDown, bool mouseDownMiddle){       // create circles which link the different nodes to each other
 	// NodeSelecter is a structure used to select two nodes to connect them (one is the nodePickedInput, and one is the nodePickedOutput)
 	// In fact, nodePickedInput and nodePickedOutput are nodes associated with positions (structure NodePickedInfo)
 	ImColor color;
@@ -95,14 +94,23 @@ void NodeWindow::renderAndPick(NodeSelecter &ns, bool mouseDown){       // creat
 			color = ImColor(0,0,150,150);
             
 			if(mouseDown){ // the user selects the input of the node associated with nodePickedInput
-                if(!ns.inputHasBeenPicked){ // if the selected input node has been picked
-                    ns.nodePickedInput.nodeWindow = this;
-                    ns.nodePickedInput.pos = i;
-                    ns.inputHasBeenPicked = true;
-                }
+				if (!ns.inputHasBeenPicked) { // if the selected input node has been picked
+					ns.nodePickedInput.nodeWindow = this;
+					ns.nodePickedInput.pos = i;
+					ns.inputHasBeenPicked = true;
+				}
             }
+
+			// Scroll click used to select the input to delete
+			else if (mouseDownMiddle) {
+				ns.nodePickedInputToDelete.nodeWindow = this;
+				ns.nodePickedInputToDelete.pos = i;
+				ns.inputHasBeenPickedToDelete = true;
+			}
         }
+
         if(ns.nodePickedInput.nodeWindow == this && ns.nodePickedInput.pos == i)color =ImColor(0,150,0,150);
+		if (ns.nodePickedInputToDelete.nodeWindow == this && ns.nodePickedInputToDelete.pos == i)color = ImColor(0, 0, 0, 150);
 		// add a circle at the intput of the node associated with nodePickedIntput
 		// this node will be connected with the output node found in the next loop
         m_drawList->AddCircleFilled(GetInputSlotPos(i), 10, color,64);
@@ -135,14 +143,33 @@ void NodeWindow::renderAndPick(NodeSelecter &ns, bool mouseDown){       // creat
                 }
             }
 
+			// Scroll click used to select the output to delete
+			else if (mouseDownMiddle) {
+				ns.nodePickedOutputToDelete.nodeWindow = this;
+				ns.nodePickedOutputToDelete.pos = i;
+				ns.inputHasBeenPickedToDelete = true;
+			}
+
         }
 
-        if(ns.nodePickedOutput.nodeWindow == this && ns.nodePickedOutput.pos == i)color =ImColor(0,150,0,150); 
+		// Output slot appears green when we want to create a connection
+		if (ns.nodePickedOutput.nodeWindow == this && ns.nodePickedOutput.pos == i) {
+			color = ImColor(0, 150, 0, 150);
+		}
+
+		// Slot appears black when we want to delete the connection 
+		if (ns.nodePickedOutputToDelete.nodeWindow == this && ns.nodePickedOutputToDelete.pos == i) {
+			color = ImColor(0, 0, 0, 150);
+		}
+		
 		// add a circle at the output of the node associated with nodePickedOutput
 		// this node will be connected with the input node found in the previous loop
         m_drawList->AddCircleFilled(GetOutputSlotPos(i), 10, color,64);
-        color = ImColor(150,0,0,150);
+        
+		// Default color: red
+		color = ImColor(150,0,0,150);
     }
+	
     if(ns.nodePickedInput.nodeWindow == this){ // draw a curve from the input node to the mouse
         int pos =  ns.nodePickedInput.pos;
         ImVec2 p1 = GetInputSlotPos(pos);
@@ -159,7 +186,6 @@ void NodeWindow::renderAndPick(NodeSelecter &ns, bool mouseDown){       // creat
         ImVec2 p4 = ImVec2(p2.x-50,p2.y);
         m_drawList->AddBezierCurve(p1, p3, p4, p2, ImColor(200,200,100), 3.0f);
     }
-
 
 }
 
@@ -239,5 +265,3 @@ void NodeWindow::connectPreviousWindow(NodeWindow* prev,string in,string out){
     int inpos = this->node->getIndiceInByName(in);
     connectPreviousWindow(prev,inpos,outpos);
 }
-
-
