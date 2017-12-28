@@ -141,6 +141,8 @@ public:
   void connect(Node* n,std::string outName,int pos); //connect to another node
   bool isAscendent(Node* toConnect); // check if a node is a parent
   bool isConnectedToInput(); //check if all input are conencted
+  bool isConnectedToInput2(); // check if inputs of node are connected (non recursive)
+  bool isConnectedToOutput(); // check if output is connected
   void orderNode(std::vector<Node*>& orderedNode); //order the nodes before writing master script
   void parse(); //parse to find input, output, gather emit
   void parseTweaks(); //parse to find the tweaks and add them in the interface.

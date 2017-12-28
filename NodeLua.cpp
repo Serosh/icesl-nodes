@@ -233,7 +233,7 @@ bool Node::isAscendent(Node* toConnect){
 }
 
 //-------------------------------------------------------
-//test if all input are connected
+//test if all inputs are connected
 bool Node::isConnectedToInput(){
     bool b = true;
     for( auto& val: prevNamed){
@@ -243,6 +243,35 @@ bool Node::isConnectedToInput(){
     }
 
     return b;
+}
+
+//-------------------------------------------------------
+//check if inputs of node are connected (non recursive)
+bool Node::isConnectedToInput2() {
+	bool b = true;
+	for (auto& val : prevNamed) {
+		Node* a = val.second.first;
+		if (a == nullptr) {
+			return false;
+		}
+	}
+	return b;
+}
+
+//-------------------------------------------------------
+//test if output is connected
+
+bool Node::isConnectedToOutput() {
+	bool b = true;
+
+	for (auto& val : nextNamed) {
+		Node* a = val.second;
+		if (a == nullptr) {
+			return false;
+		}
+	}
+
+	return b;
 }
 
 

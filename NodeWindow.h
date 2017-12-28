@@ -23,8 +23,10 @@ struct NodeSelecter;
 class NodeWindow:public GenericWindow{
     Node* node;
     std::vector<NodeWindow*> previousConnectedWindow; // contains all the windows which are connected to the window of the Node node (to its input)
+	//bool isConnected = false;
 
 public:
+
     NodeWindow():GenericWindow(){}
     NodeWindow(Node*n, const char *name,v2i pos):GenericWindow(name,pos),node(n)
     {
@@ -66,19 +68,24 @@ public:
     void removeConnectionTo(NodeWindow* nw){
         ForIndex(i,previousConnectedWindow.size()){
             if(previousConnectedWindow[i] == nw){
+				//nw->node->removeConnectionTo(previousConnectedWindow[i]->node);
                 previousConnectedWindow[i] = nullptr;
+				//previousConnectedWindow[i]->node->removeConnectionTo(nw->node);
             }
         }
+		
     }
 };
 //structure containing a node and the position of this node (I think)
 struct NodePickedInfo{
     NodeWindow* nodeWindow;
     int pos;
+
     NodePickedInfo(){
         nodeWindow = nullptr;
         pos = 0;
     }
+
     NodePickedInfo(NodeWindow* nw, int pos){
         nodeWindow = nw;
         pos = pos;
@@ -92,10 +99,12 @@ struct NodeSelecter{
     NodePickedInfo nodePickedOutput;
     bool inputHasBeenPicked;
     bool outputHasBeenPicked;
+
     NodeSelecter(){
         inputHasBeenPicked  = false;
         outputHasBeenPicked = false;
     }
+
     void reset(){
         nodePickedInput.nodeWindow  = nullptr;
         nodePickedOutput.nodeWindow = nullptr;

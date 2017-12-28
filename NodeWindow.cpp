@@ -53,6 +53,9 @@ bool NodeWindow::display(){
         ImVec2 p3 = ImVec2(p1.x+50,p1.y);
         ImVec2 p4 = ImVec2(p2.x-50,p2.y);
         m_drawList->AddBezierCurve(p1, p3, p4, p2, ImColor(200,200,100), 3.0f);
+		//m_drawList->AddCircleFilled(p1, 10, ImColor(150, 150, 150, 150), 64);
+		//m_drawList->AddCircleFilled(p2, 10, ImColor(150, 150, 150, 150), 64);
+		//w->isConnected = true;
     }
     if(node->isInErrorState()){                                         // Gestion d'erreur 
         m_drawList->AddRect(minc,maxc, ImColor(150,0,0,150),10.0,0xFF,err_cont);
@@ -67,15 +70,31 @@ bool NodeWindow::display(){
 void NodeWindow::renderAndPick(NodeSelecter &ns, bool mouseDown){       // create circles which link the different nodes to each other
 	// NodeSelecter is a structure used to select two nodes to connect them (one is the nodePickedInput, and one is the nodePickedOutput)
 	// In fact, nodePickedInput and nodePickedOutput are nodes associated with positions (structure NodePickedInfo)
-    ImColor color = ImColor(150,150,150,150);                           // Gestion de la couleur des cercles en fonction du clic, du drag, de la connection, ...
+	ImColor color;
+	
+	// At the begining, slots are red because diconnected
+	color = ImColor(150, 0, 0, 150);                           // Gestion de la couleur des cercles en fonction du clic, du drag, de la connection, ...
     v2i Mpos = v2i(ImGui::GetMousePos().x,ImGui::GetMousePos().y);      // Position de la souris
 
     //draw input circles (original comment)
     ForIndex(i,node->getInputName().size()){
         v2i Cpos = v2i(GetInputSlotPos(i).x,GetInputSlotPos(i).y); // vector containing the position of the input of the node associated with nodePickedInput
-        if(sqLength(Cpos-Mpos) < 100){ // the user has its mouse near to the input of the selected node associated with nodePickedInput
-            color =ImColor(150,0,0,150);
-            if(mouseDown){ // the user selects the input of the node associated with nodePickedInput
+
+		// Red if on of the input is not connected
+		// Grey if all inputs are connected
+		if (node->isConnectedToInput2()) {
+			color = ImColor(150, 150, 150, 150);
+		}
+		else {
+			color = ImColor(150, 0, 0, 150);
+		}
+
+		if(sqLength(Cpos-Mpos) < 100){ // the user has its mouse near to the input of the selected node associated with nodePickedInput
+            
+			// blue color as red is used for non-connected nodes
+			color = ImColor(0,0,150,150);
+            
+			if(mouseDown){ // the user selects the input of the node associated with nodePickedInput
                 if(!ns.inputHasBeenPicked){ // if the selected input node has been picked
                     ns.nodePickedInput.nodeWindow = this;
                     ns.nodePickedInput.pos = i;
@@ -87,14 +106,27 @@ void NodeWindow::renderAndPick(NodeSelecter &ns, bool mouseDown){       // creat
 		// add a circle at the intput of the node associated with nodePickedIntput
 		// this node will be connected with the output node found in the next loop
         m_drawList->AddCircleFilled(GetInputSlotPos(i), 10, color,64);
-        color = ImColor(150,150,150,150);
+        color = ImColor(150,0,0,150);
     }
 
     //draw output circles (original comment)
     ForIndex(i,node->getoutputName().size()){ // cycle through (parcourt) the nodes which are connected to the output of the current node            
         v2i Cpos = v2i(GetOutputSlotPos(i).x,GetOutputSlotPos(i).y); // vector containing the position of the output of the node associated with nodePickedOutput
-        if(sqLength(Cpos-Mpos) < 100){ // if the user has its mouse near to the output of the selected node associated with nodePickedOutput
-            color =ImColor(150,0,0,150);
+
+		// Red if the output is not connected
+		// Grey if the output is connected
+		if (node->isConnectedToOutput()) {
+			color = ImColor(150, 150, 150, 150);
+		}
+		else {
+			color = ImColor(150, 0, 0, 150);
+		}
+
+		if(sqLength(Cpos-Mpos) < 100){ // if the user has its mouse near to the output of the selected node associated with nodePickedOutput
+            
+			// changed to blue color as red is used for non-connected outputs
+			color = ImColor(0, 0, 150, 150);
+
             if(mouseDown){ // if the user selects the output of the node associated with nodePickedOutput
                 if(!ns.outputHasBeenPicked){ // if the selected output node has been picked
                     ns.nodePickedOutput.nodeWindow = this; 
@@ -102,12 +134,14 @@ void NodeWindow::renderAndPick(NodeSelecter &ns, bool mouseDown){       // creat
                     ns.outputHasBeenPicked = true;
                 }
             }
+
         }
+
         if(ns.nodePickedOutput.nodeWindow == this && ns.nodePickedOutput.pos == i)color =ImColor(0,150,0,150); 
 		// add a circle at the output of the node associated with nodePickedOutput
 		// this node will be connected with the input node found in the previous loop
         m_drawList->AddCircleFilled(GetOutputSlotPos(i), 10, color,64);
-        color = ImColor(150,150,150,150);
+        color = ImColor(150,0,0,150);
     }
     if(ns.nodePickedInput.nodeWindow == this){ // draw a curve from the input node to the mouse
         int pos =  ns.nodePickedInput.pos;
