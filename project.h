@@ -269,6 +269,35 @@ public:
     importLua(std::string(PATHTOSRC"/lua_constant/emit.lua"));
   }
   
+  // Instead of ccube.lua, we display Centred Cube
+  std::string giveNodeName(std::string raw_name) {
+
+	  std::string name = ""; // Name of the node
+
+	  if (raw_name == "ccone.lua") { name = "Centred Cone"; }
+	  else if (raw_name == "ccube.lua") { name = "Centred Cube"; }
+	  else if (raw_name == "ccylinder.lua") { name = "Centred Cylinder"; }
+	  else if (raw_name == "cone.lua") { name = "Cone"; }
+	  else if (raw_name == "cube.lua") { name = "Cube"; }
+	  else if (raw_name == "cylinder.lua") { name = "Cylinder"; }
+	  else if (raw_name == "difference.lua") { name = "Difference"; }
+	  else if (raw_name == "emit.lua") { name = "EMIT"; }
+	  else if (raw_name == "intersection.lua") { name = "Intersection"; }
+	  else if (raw_name == "load.lua") { name = "Load"; }
+	  else if (raw_name == "mirror.lua") { name = "Mirror"; }
+	  else if (raw_name == "rotate.lua") { name = "Rotate"; }
+	  else if (raw_name == "rotate_a.lua") { name = "Rotate (Angular)"; }
+	  else if (raw_name == "scale.lua") { name = "Scale"; }
+	  else if (raw_name == "sphere.lua") { name = "Sphere"; }
+	  else if (raw_name == "translate.lua") { name = "Translate"; }
+	  else if (raw_name == "union.lua") { name = "Union"; }
+	  else if (raw_name == "vector.lua") { name = "Vector"; }
+	  else { name = raw_name; }
+
+	  return name;
+
+  }
+
   //---------------------------------------------------
   // Create a file tree
   std::string recursiveFileSelecter(std::string current_dir)
@@ -293,11 +322,54 @@ public:
 	//Set a new style color for files
     ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1., 1., 1.0, 1));
 	//For all files, add a menuItem untitled with file name and set actual nameDir
-    ForIndex(i, files.size()){
-      if (ImGui::MenuItem(files[i].c_str())){
-        nameDir = current_dir + "/" + files[i].c_str();
-      }
-    }
+	
+	std::string name = ""; // Name of each node
+
+	if (ImGui::CollapsingHeader("Primitives")) {
+		ForIndex(i, files.size()) {
+			name = giveNodeName(files[i]);
+			if (name == "Centred Cone" || name == "Centred Cube" || name == "Centred Cylinder"
+				|| name == "Cone" || name == "Cube" || name == "Cylinder" || name == "Sphere" || name == "Vector") {
+				if (ImGui::MenuItem(name.c_str())) {
+					nameDir = current_dir + "/" + files[i].c_str();
+				}
+			}
+		}
+	}
+
+	if (ImGui::CollapsingHeader("Transformations")) {
+		ForIndex(i, files.size()) {
+			name = giveNodeName(files[i]);
+			if (name == "Mirror" || name == "Rotate" || name == "Rotate (Angular)"
+				|| name == "Translate" || name == "Scale") {
+				if (ImGui::MenuItem(name.c_str())) {
+					nameDir = current_dir + "/" + files[i].c_str();
+				}
+			}
+		}
+	}
+
+	if (ImGui::CollapsingHeader("CSG Operations")) {
+		ForIndex(i, files.size()) {
+			name = giveNodeName(files[i]);
+			if (name == "Difference" || name == "Intersection" || name == "Union") {
+				if (ImGui::MenuItem(name.c_str())) {
+					nameDir = current_dir + "/" + files[i].c_str();
+				}
+			}
+		}
+	}
+
+	ForIndex(i, files.size()) {
+		name = giveNodeName(files[i]);
+		if (!(name == "Centred Cone" || name == "Centred Cube" || name == "Centred Cylinder" || name == "Cone" || name == "Cube" || name == "Cylinder" || name == "Sphere" || 
+			name == "Vector" || name == "Difference" || name == "Intersection" || name == "Union" || name == "Mirror" || name == "Rotate" || name == "Rotate (Angular)" || name == "Translate" || name == "Scale")) {
+			if (ImGui::MenuItem(name.c_str())) {
+				nameDir = current_dir + "/" + files[i].c_str();
+			}
+		}
+	}
+
     ImGui::PopStyleColor();
 
     return nameDir;
