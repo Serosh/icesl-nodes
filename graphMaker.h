@@ -125,5 +125,7 @@ public:
 
   void RenderMenu();
 
+  void nodesBox();
+
 };
 

@@ -384,7 +384,16 @@ public:
     ImGui::SetWindowPos(ImVec2(pos[0], pos[1]));
     ImGui::End();
     return nameDir;
+  }
 
+  std::string renderFileSelecterForNodesBox() {
+	  std::string nameDir = "";
+	  ImGui::Begin("Nodes Box");
+	  nameDir = recursiveFileSelecter(path + "\\node\\");
+	  ImGui::SetWindowPos(ImVec2(0, 20));
+	  ImGui::SetWindowSize(ImVec2(150, 500));
+	  ImGui::End();
+	  return nameDir;
   }
 
 };

@@ -177,9 +177,11 @@ void GraphMaker::RenderMenu()
           getProject().importLua(path);
         }
       }
+
       ImGui::EndMenu();
 
     }
+
     ImGui::EndMainMenuBar();
   }
 }
@@ -210,6 +212,7 @@ void GraphMaker::renderImgui(){
     }
   }
   RenderMenu();
+  nodesBox();
   ForIndex(i, getNodeWindows().size()){
     bool toDelete = getNodeWindows()[i]->display();
     if (toDelete) {//clicked on the little cross
@@ -236,4 +239,13 @@ void GraphMaker::renderImgui(){
 
   ImGui::Render();
 
+}
+
+void GraphMaker::nodesBox() {
+	if (hasActiveProject()) {
+		string fileName = getProject().renderFileSelecterForNodesBox();
+		if (fileName.size() > 0) {
+			makeNewNode(fileName, v2i(300, 300));
+		}
+	}
 }
